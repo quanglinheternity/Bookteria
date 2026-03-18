@@ -1,5 +1,6 @@
 package com.devteria.profile.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.devteria.profile.dto.userProfile.UserProfileRequest;
@@ -35,6 +36,7 @@ public class UserProfileService {
                 userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("Profile not found"));
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserProfileResponse> getAllProfiles() {
         var profiles = userProfileRepository.findAll();
 
