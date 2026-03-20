@@ -21,12 +21,19 @@ public class NotificationController {
     @KafkaListener(topics = "notification-delivery")
     public  void  listenNotificationDelivery(NotificationEvent message){
         log.info("Message received: {}", message);
-        emailService.sendEmail(SendEmailRequest.builder()
-                .to(Recipient.builder()
-                        .email(message.getRecipient())
-                        .build())
-                .subject(message.getSubject())
-                .htmlContent(message.getBody())
-                .build());
+        try {
+            emailService.sendEmail(
+                    SendEmailRequest.builder()
+                            .to(Recipient.builder()
+                                    .email(message.getRecipient())
+                                    .build())
+                            .subject(message.getSubject())
+                            .htmlContent(message.getBody())
+                            .build()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Send email failed", e);
+        }
     }
 }

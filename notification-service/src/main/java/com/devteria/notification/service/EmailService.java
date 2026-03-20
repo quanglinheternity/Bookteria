@@ -36,6 +36,7 @@ public class EmailService {
         try {
             return emailClient.sendEmail(apiKey,emailRequest);
         } catch (FeignException e) {
+            e.printStackTrace();
             throw new AppException(ErrorCode.CANNOT_SEND_MAIL);
         }
     }
