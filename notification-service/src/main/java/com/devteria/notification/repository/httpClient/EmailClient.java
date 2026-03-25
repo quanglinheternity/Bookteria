@@ -1,4 +1,4 @@
-package com.devteria.notification.repository.httpclient;
+package com.devteria.notification.repository.httpClient;
 
 import com.devteria.notification.dto.Email.EmailRequest;
 import com.devteria.notification.dto.Email.EmailResponse;
