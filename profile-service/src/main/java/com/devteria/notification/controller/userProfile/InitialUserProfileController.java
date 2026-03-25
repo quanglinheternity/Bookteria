@@ -1,5 +1,6 @@
 package com.devteria.notification.controller.userProfile;
 
+import com.devteria.notification.dto.ApiResponse;
 import com.devteria.notification.dto.userProfile.UserProfileRequest;
 import com.devteria.notification.dto.userProfile.UserProfileResponse;
 import com.devteria.notification.service.UserProfileService;
@@ -20,6 +21,12 @@ public class InitialUserProfileController {
     @PostMapping("/create")
     UserProfileResponse creatProfile(@RequestBody UserProfileRequest request) {
         return userProfileService.createProfile(request);
+    }
+    @GetMapping("/{userId}")
+    ApiResponse<UserProfileResponse> getProfile(@PathVariable String userId){
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getByUserId(userId))
+                .build();
     }
 
 

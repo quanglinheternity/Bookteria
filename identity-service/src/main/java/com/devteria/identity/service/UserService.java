@@ -3,13 +3,13 @@ package com.devteria.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.devteria.event.dto.NotificationEvent;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.constant.PredefinedRole;
 import com.devteria.identity.dto.request.UserCreationRequest;
 import com.devteria.identity.dto.request.UserUpdateRequest;
@@ -28,9 +28,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.mvc.condition.RequestConditionHolder;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +64,7 @@ public class UserService {
                 .subject("Welcome to bookteria")
                 .body("Hello," + request.getUsername())
                 .build();
-        //public message to kafka
+        // public message to kafka
         kafkaTemplate.send("notification-delivery", notificationEvent);
         return userMapper.toUserResponse(user);
     }

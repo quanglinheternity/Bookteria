@@ -1,10 +1,9 @@
 package com.devteria.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Map;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Map;
 
 @Data
 @Builder
@@ -18,6 +17,4 @@ public class NotificationEvent {
     Map<String, Object> param;
     String subject;
     String body;
-
-
 }

@@ -1,5 +1,7 @@
 package com.devteria.notification.service;
 
+import com.devteria.notification.exception.AppException;
+import com.devteria.notification.exception.ErrorCode;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,13 @@ public class UserProfileService {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
 
         userProfile = userProfileRepository.save(userProfile);
+        return userProfileMapper.toUserProfileResponse(userProfile);
+    }
+    public UserProfileResponse getByUserId(String userId){
+        log.info("userId {}",userId );
+        UserProfile userProfile =
+                userProfileRepository.findByUserId(userId)
+                        .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
