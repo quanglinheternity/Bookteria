@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:profile-service/src/main/java/com/devteria/notification/config/SecurityConfig.java
+package com.devteria.notification.config;
+========
 package com.devteria.notification.configuration;
+>>>>>>>> quanglinh/post-service:notification-service/src/main/java/com/devteria/notification/configuration/SecurityConfig.java
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

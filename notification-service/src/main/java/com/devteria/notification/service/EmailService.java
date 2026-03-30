@@ -6,7 +6,7 @@ import com.devteria.notification.dto.Email.SendEmailRequest;
 import com.devteria.notification.dto.Email.Sender;
 import com.devteria.notification.exception.AppException;
 import com.devteria.notification.exception.ErrorCode;
-import com.devteria.notification.repository.httpclient.EmailClient;
+import com.devteria.notification.repository.httpClient.EmailClient;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
