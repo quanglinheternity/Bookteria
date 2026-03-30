@@ -33,7 +33,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
     ObjectMapper objectMapper;
     @NonFinal
-    String[] publicEndpoints = {"/identity/auth/.*","/identity/users/registration"};
+    String[] publicEndpoints = {
+            "/identity/auth/.*","/identity/users/registration",
+            "/notification/email/send","/file/media/download/.*"
+    };
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("Enter authentication filter ...");

@@ -5,7 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@Document(collation = "file_mgmt")
+@Document(collection = "file_mgmt")
 @Data
 @Builder
 @NoArgsConstructor

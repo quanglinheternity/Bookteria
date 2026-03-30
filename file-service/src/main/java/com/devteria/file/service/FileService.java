@@ -1,8 +1,11 @@
 package com.devteria.file.service;
 
 import com.devteria.file.dto.FileInfo;
+import com.devteria.file.dto.file.FileData;
 import com.devteria.file.dto.file.FileResponse;
 import com.devteria.file.entity.FileMgmt;
+import com.devteria.file.exception.AppException;
+import com.devteria.file.exception.ErrorCode;
 import com.devteria.file.mapper.FileMgmtMapper;
 import com.devteria.file.repository.FileMgmtRepository;
 import com.devteria.file.repository.FileRepository;
@@ -10,18 +13,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +40,10 @@ public class FileService {
                 .originalFileName(file.getOriginalFilename())
                 .url(fileInfo.getUrl())
                 .build();
+    }
+    public FileData download(String fileName) throws IOException {
+        FileMgmt fileMgmt = fileMgmtRepository.findById(fileName).orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_FOUND));
+        var resource =  fileRepository.read(fileMgmt);
+        return new FileData(fileMgmt.getContentType(),resource);
     }
 }

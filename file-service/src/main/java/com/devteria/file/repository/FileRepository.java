@@ -1,7 +1,10 @@
 package com.devteria.file.repository;
 
 import com.devteria.file.dto.FileInfo;
+import com.devteria.file.entity.FileMgmt;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -20,11 +23,11 @@ public class FileRepository {
     @Value("${app.file.stroage-dir}")
     String fileStorageDir;
     @Value("${app.file.download-prefix}")
-    String urlPrefix;
+    String urlPrefixs;
 
     public FileInfo store(MultipartFile file) throws IOException {
-        Path folder = Paths.get("upload");
-        String urlPrefix = "http://localhost:8888/api/v1/file/media";
+        Path folder = Paths.get(fileStorageDir);
+        String urlPrefix = urlPrefixs;
         String fileExtension =  StringUtils
                 .getFilenameExtension(file.getOriginalFilename());
         String fileName = Objects.isNull(fileExtension)
@@ -42,4 +45,10 @@ public class FileRepository {
                 .url(urlPrefix + fileName)
                 .build();
     }
+
+    public Resource read(FileMgmt fileMgmt) throws IOException {
+        var data = Files.readAllBytes(Path.of(fileMgmt.getPath()));
+        return new ByteArrayResource(data);
+    }
+
 }
