@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:notification-service/src/main/java/com/devteria/notification/dto/ApiResponse.java
-package com.devteria.notification.dto;
-========
-package com.devteria.post.dto;
->>>>>>>> quanglinh/file-service:post-service/src/main/java/com/devteria/post/dto/ApiResponse.java
+package com.devteria.file.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;

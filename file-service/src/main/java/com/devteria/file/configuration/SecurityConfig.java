@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:post-service/src/main/java/com/devteria/post/configuration/SecurityConfig.java
-package com.devteria.post.configuration;
-========
-package com.devteria.notification.configuration;
->>>>>>>> quanglinh/file-service:notification-service/src/main/java/com/devteria/notification/configuration/SecurityConfig.java
+package com.devteria.file.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-<<<<<<<< HEAD:post-service/src/main/java/com/devteria/post/configuration/SecurityConfig.java
-        "/internal/users"
-========
->>>>>>>> quanglinh/file-service:notification-service/src/main/java/com/devteria/notification/configuration/SecurityConfig.java
+         "/media/download/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -35,7 +28,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers( PUBLIC_ENDPOINTS)
                 .permitAll()
                 .anyRequest()
                 .authenticated());

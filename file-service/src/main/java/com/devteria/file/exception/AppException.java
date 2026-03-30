@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:notification-service/src/main/java/com/devteria/notification/exception/AppException.java
-package com.devteria.notification.exception;
-========
-package com.devteria.post.exception;
->>>>>>>> quanglinh/file-service:post-service/src/main/java/com/devteria/post/exception/AppException.java
+package com.devteria.file.exception;
 
 public class AppException extends RuntimeException {
 

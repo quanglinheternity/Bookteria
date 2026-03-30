@@ -1,14 +1,7 @@
-<<<<<<<< HEAD:profile-service/src/main/java/com/devteria/notification/config/JwtAuthenticationEntryPoint.java
-package com.devteria.notification.config;
+package com.devteria.file.configuration;
 
-import com.devteria.notification.dto.ApiResponse;
-import com.devteria.notification.exception.ErrorCode;
-========
-package com.devteria.post.configuration;
-
-import com.devteria.post.dto.ApiResponse;
-import com.devteria.post.exception.ErrorCode;
->>>>>>>> quanglinh/file-service:post-service/src/main/java/com/devteria/post/configuration/JwtAuthenticationEntryPoint.java
+import com.devteria.file.dto.ApiResponse;
+import com.devteria.file.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

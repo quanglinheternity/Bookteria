@@ -1,12 +1,6 @@
-<<<<<<<< HEAD:notification-service/src/main/java/com/devteria/notification/exception/GlobalExceptionHandler.java
-package com.devteria.notification.exception;
+package com.devteria.file.exception;
 
-import com.devteria.notification.dto.ApiResponse;
-========
-package com.devteria.post.exception;
-
-import com.devteria.post.dto.ApiResponse;
->>>>>>>> quanglinh/file-service:post-service/src/main/java/com/devteria/post/exception/GlobalExceptionHandler.java
+import com.devteria.file.dto.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

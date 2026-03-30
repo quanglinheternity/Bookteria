@@ -4,7 +4,7 @@ package com.devteria.notification.dto.userProfile;
 import java.time.LocalDate;
 ========
 package com.devteria.post.dto.response;
->>>>>>>> quanglinh/post-service:post-service/src/main/java/com/devteria/post/dto/response/UserProfileResponse.java
+>>>>>>>> quanglinh/file-service:post-service/src/main/java/com/devteria/post/dto/response/UserProfileResponse.java
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
