@@ -8,6 +8,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/file-service?authSource=admin
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 app:
   file:
     stroage-dir: upload

@@ -1,11 +1,9 @@
-package com.devteria.post.dto.response;
+package com.devteria.profile.dto.userProfile;
 
 import java.time.LocalDate;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor

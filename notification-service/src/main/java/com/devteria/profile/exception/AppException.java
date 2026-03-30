@@ -1,5 +1,4 @@
-
-package com.devteria.post.exception;
+package com.devteria.profile.exception;
 
 public class AppException extends RuntimeException {
 
