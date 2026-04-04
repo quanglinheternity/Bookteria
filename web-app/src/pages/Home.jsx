@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Card, CircularProgress, Typography } from "@mui/material";
 import { isAuthenticated } from "../services/authenticationService";
 import Scene from "./Scene";
+import Post from "../components/Post";
 import { getMyPosts } from "../services/postService";
 import { logOut } from "../services/authenticationService";
-import Post from "../components/Post";
-import { useRef } from "react";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
