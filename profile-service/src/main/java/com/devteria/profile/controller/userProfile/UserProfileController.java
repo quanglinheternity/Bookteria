@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.devteria.profile.dto.ApiResponse;
+import com.devteria.profile.dto.userProfile.SearchUserRequest;
 import com.devteria.profile.dto.userProfile.UpdateProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileResponse;
 import com.devteria.profile.service.UserProfileService;
@@ -27,6 +28,12 @@ public class UserProfileController {
     ApiResponse<UserProfileResponse> getProfile(@PathVariable String profileId) {
         return ApiResponse.<UserProfileResponse>builder()
                 .result(userProfileService.getProfile(profileId))
+                .build();
+    }
+    @GetMapping("/internal/{userId}/detail")
+    ApiResponse<UserProfileResponse> getUserId(@PathVariable String userId) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getByUserId(userId))
                 .build();
     }
 
@@ -55,6 +62,13 @@ public class UserProfileController {
     ApiResponse<UserProfileResponse> updateAvatarProfile(@RequestParam("file") MultipartFile file) {
         return ApiResponse.<UserProfileResponse>builder()
                 .result(userProfileService.updateAvatar(file))
+                .build();
+    }
+
+    @PostMapping("/search")
+    ApiResponse<List<UserProfileResponse>> search(@RequestBody SearchUserRequest request) {
+        return ApiResponse.<List<UserProfileResponse>>builder()
+                .result(userProfileService.search(request))
                 .build();
     }
 }

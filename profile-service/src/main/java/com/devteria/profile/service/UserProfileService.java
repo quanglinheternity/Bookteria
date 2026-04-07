@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.devteria.profile.dto.userProfile.SearchUserRequest;
 import com.devteria.profile.dto.userProfile.UpdateProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileResponse;
@@ -96,5 +97,14 @@ public class UserProfileService {
         profile.setAvatar(response.getResult().getUrl());
 
         return userProfileMapper.toUserProfileResponse(userProfileRepository.save(profile));
+    }
+
+    public List<UserProfileResponse> search(SearchUserRequest request) {
+        var userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<UserProfile> userProfiles = userProfileRepository.findAllByUserNameLike(request.getKeyword());
+        return userProfiles.stream()
+                .filter(userProfile -> !userId.equals(userProfile.getUserId()))
+                .map(userProfileMapper::toUserProfileResponse)
+                .toList();
     }
 }
