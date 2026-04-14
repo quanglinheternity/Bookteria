@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatMessageService {
+    SocketIOServer socketIOServer;
     ChatMessageRepository chatMessageRepository;
     ConversationRepository conversationRepository;
     ProfileClient profileClient;
@@ -76,8 +78,13 @@ public class ChatMessageService {
                 .avatar(userInfo.getAvatar())
                 .build());
         chatMessage.setCreatedDate(Instant.now());
-
+        //crate chat message
         chatMessage = chatMessageRepository.save(chatMessage);
+        String message = chatMessage.getMessage();
+        // publish socket envent to client
+        socketIOServer.getAllClients().forEach(client -> {
+            client.sendEvent("message", message);
+        });
 
         return toChatMessageResponse(chatMessage);
     }
