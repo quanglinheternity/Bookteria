@@ -7,7 +7,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.devteria.chat.entity.Conversation;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ConversationRepository extends MongoRepository<Conversation, String> {
     Optional<Conversation> findByParticipantsHash(String hash);
 
