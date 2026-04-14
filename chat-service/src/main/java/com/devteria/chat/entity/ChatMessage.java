@@ -1,7 +1,6 @@
 package com.devteria.chat.entity;
 
 import java.time.Instant;
-import java.util.List;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,20 +14,19 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "conversation")
+@Document(collection = "chat_message")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Conversation {
+public class ChatMessage {
     @MongoId
     String id;
 
-    String type; // GROUP, DIRECT
+    @Indexed
+    String conversationId;
 
-    @Indexed(unique = true)
-    String participantsHash;
+    String message;
 
-    List<ParticipantInfo> participants;
+    ParticipantInfo sender;
 
+    @Indexed
     Instant createdDate;
-
-    Instant modifiedDate;
 }

@@ -1,7 +1,6 @@
 package com.devteria.chat.dto.response;
 
 import java.time.Instant;
-import java.util.List;
 
 import com.devteria.chat.entity.ParticipantInfo;
 
@@ -13,13 +12,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ConversationResponse {
+public class ChatMessageResponse {
     String id;
-    String type; // GROUP, DIRECT
-    String participantsHash;
-    String conversationAvatar;
-    String conversationName;
-    List<ParticipantInfo> participants;
+    String conversationId;
+    boolean me;
+    String message;
+    ParticipantInfo sender;
     Instant createdDate;
-    Instant modifiedDate;
 }

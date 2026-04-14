@@ -6,6 +6,7 @@
 /home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/dto/ApiResponse.java
 /home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/dto/FileInfo.java
 /home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/dto/PageResponse.java
+/home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/dto/file/FileData.java
 /home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/dto/file/FileResponse.java
 /home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/entity/FileMgmt.java
 /home/quanglinh/Work/ITS/bookteria/file-service/src/main/java/com/devteria/file/exception/AppException.java
