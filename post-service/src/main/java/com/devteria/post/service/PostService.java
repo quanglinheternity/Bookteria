@@ -15,9 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
 
@@ -30,11 +31,11 @@ public class PostService {
     PostMapper postMapper;
     TimeFormatter timeFormatter;
     ProfileClient profileClient;
+    HttpServletRequest request;
     public  PostResponse createPost(PostRequest request){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Post post = Post.builder()
                 .content(request.getContent())
-                .userId(authentication.getName())
+                .userId(this.request.getHeader("X-User-Id"))
                 .createdDate(Instant.now())
                 .modifiedDate(Instant.now())
                 .build();
@@ -43,8 +44,7 @@ public class PostService {
 
     }
     public PageResponse<PostResponse> getMyPost(int page, int size){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+        String userId = request.getHeader("X-User-Id");
 
         UserProfileResponse userProfile = null;
         try {

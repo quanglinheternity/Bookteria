@@ -5,7 +5,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Service;
 
 import com.corundumstudio.socketio.SocketIOServer;
@@ -42,9 +43,10 @@ public class ChatMessageService {
     ProfileClient profileClient;
     WebSocketSessionRepository webSocketSessionRepository;
     ChatMessageMapper chatMessageMapper;
+    HttpServletRequest request;
 
     public List<ChatMessageResponse> getMessages(String conversationId) {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userId = request.getHeader("X-User-Id");
 
         // validate conversationId
         var conversation = conversationRepository
@@ -58,11 +60,11 @@ public class ChatMessageService {
         return messages.stream().map(this::toChatMessageResponse).toList();
     }
 
-    public ChatMessageResponse create(ChatMessageRequest request) throws JsonProcessingException {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ChatMessageResponse create(ChatMessageRequest messageRequest) throws JsonProcessingException {
+        String userId = request.getHeader("X-User-Id");
         // validate conversationId
         var conversation = conversationRepository
-                .findById(request.getConversationId())
+                .findById(messageRequest.getConversationId())
                 .orElseThrow(() -> new AppException(ErrorCode.CONVERSATION_NOT_FOUND));
         conversation.getParticipants().stream()
                 .filter(participantInfo -> userId.equals(participantInfo.getUserId()))
@@ -74,7 +76,7 @@ public class ChatMessageService {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
         UserProfileResponse userInfo = userResponse.getResult();
-        ChatMessage chatMessage = chatMessageMapper.toChatMessage(request);
+        ChatMessage chatMessage = chatMessageMapper.toChatMessage(messageRequest);
         chatMessage.setSender(ParticipantInfo.builder()
                 .userId(userInfo.getUserId())
                 .username(userInfo.getUsername())
@@ -114,7 +116,7 @@ public class ChatMessageService {
     }
 
     private ChatMessageResponse toChatMessageResponse(ChatMessage chatMessage) {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userId = request.getHeader("X-User-Id");
 
         var chatMessageResponse = chatMessageMapper.toChatMessageResponse(chatMessage);
         chatMessageResponse.setMe(userId.equals(chatMessage.getSender().getUserId()));

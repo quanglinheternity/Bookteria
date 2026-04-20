@@ -1,9 +1,12 @@
 package com.devteria.profile.service;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +14,7 @@ import com.devteria.profile.dto.userProfile.SearchUserRequest;
 import com.devteria.profile.dto.userProfile.UpdateProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileResponse;
+import com.devteria.profile.entity.Follows;
 import com.devteria.profile.entity.UserProfile;
 import com.devteria.profile.exception.AppException;
 import com.devteria.profile.exception.ErrorCode;
@@ -31,6 +35,7 @@ public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
     FileClient fileClient;
+    HttpServletRequest request;
 
     public UserProfileResponse createProfile(UserProfileRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
@@ -44,7 +49,7 @@ public class UserProfileService {
         UserProfile userProfile = userProfileRepository
                 .findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        return userProfileMapper.toUserProfileResponse(userProfile);
+        return toResponsePopulated(userProfile);
     }
 
     public UserProfileResponse getProfile(String id) {
@@ -61,19 +66,17 @@ public class UserProfileService {
     }
 
     public UserProfileResponse getMyProfile() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+        String userId = request.getHeader("X-User-Id");
         log.info("userId, {}", userId);
         var profile = userProfileRepository
                 .findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        return userProfileMapper.toUserProfileResponse(profile);
+        return toResponsePopulated(profile);
     }
 
     public UserProfileResponse updateMyProfile(UpdateProfileRequest request) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+        String userId = this.request.getHeader("X-User-Id");
 
         var profile = userProfileRepository
                 .findByUserId(userId)
@@ -85,14 +88,13 @@ public class UserProfileService {
     }
 
     public UserProfileResponse updateAvatar(MultipartFile file) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+        String userId = request.getHeader("X-User-Id");
 
         var profile = userProfileRepository
                 .findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
 
-        //        update file- invoke an api fileService
+        // update file- invoke an api fileService
         var response = fileClient.uploadMedia(file);
         profile.setAvatar(response.getResult().getUrl());
 
@@ -100,11 +102,59 @@ public class UserProfileService {
     }
 
     public List<UserProfileResponse> search(SearchUserRequest request) {
-        var userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<UserProfile> userProfiles = userProfileRepository.findAllByUsernameLike(request.getKeyword());
+        var userId = this.request.getHeader("X-User-Id");
+        List<UserProfile> userProfiles =
+                userProfileRepository.searchByFirstNameOrLastName("(?i).*" + request.getKeyword() + ".*");
         return userProfiles.stream()
                 .filter(userProfile -> !userId.equals(userProfile.getUserId()))
-                .map(userProfileMapper::toUserProfileResponse)
+                .map(this::toResponsePopulated)
                 .toList();
+    }
+
+    public void follow(String userId) {
+        String currentUserId = request.getHeader("X-User-Id");
+
+        var myProfile = userProfileRepository
+                .findByUserId(currentUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var targetProfile = userProfileRepository
+                .findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (myProfile.getFollowing() == null) myProfile.setFollowing(new HashSet<>());
+
+        Follows follows = Follows.builder()
+                .target(targetProfile)
+                .followedAt(LocalDateTime.now())
+                .build();
+
+        myProfile.getFollowing().add(follows);
+        userProfileRepository.save(myProfile);
+    }
+
+    public void unfollow(String userId) {
+        String currentUserId = request.getHeader("X-User-Id");
+
+        var myProfile = userProfileRepository
+                .findByUserId(currentUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (myProfile.getFollowing() != null) {
+            myProfile
+                    .getFollowing()
+                    .removeIf(follows -> follows.getTarget().getUserId().equals(userId));
+            userProfileRepository.save(myProfile);
+        }
+    }
+
+    private UserProfileResponse toResponsePopulated(UserProfile profile) {
+        var response = userProfileMapper.toUserProfileResponse(profile);
+        String currentUserId = request.getHeader("X-User-Id");
+
+        response.setFollowersCount(userProfileRepository.countFollowers(profile.getUserId()));
+        response.setFollowingCount(userProfileRepository.countFollowing(profile.getUserId()));
+        response.setIsFollowing(userProfileRepository.isFollowing(currentUserId, profile.getUserId()));
+
+        return response;
     }
 }

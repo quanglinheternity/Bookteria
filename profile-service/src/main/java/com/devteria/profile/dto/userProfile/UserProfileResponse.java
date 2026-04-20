@@ -1,7 +1,5 @@
 package com.devteria.profile.dto.userProfile;
 
-import java.time.LocalDate;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,12 +10,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileResponse {
     String id;
-    String userId;
+    String username;
     String firstName;
     String lastName;
-    String username;
-    String email;
+
     String avatar;
-    LocalDate dob;
-    String city;
+    String bio;
+    String level;
+
+    long followersCount;
+    long followingCount;
+    long postsCount;
+
+    Boolean isFollowing;
 }

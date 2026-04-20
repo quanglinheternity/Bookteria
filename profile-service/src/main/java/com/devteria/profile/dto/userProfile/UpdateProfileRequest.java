@@ -1,7 +1,5 @@
 package com.devteria.profile.dto.userProfile;
 
-import java.time.LocalDate;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +13,7 @@ public class UpdateProfileRequest {
     String userName;
     String firstName;
     String lastName;
-    LocalDate dob;
+    String bio;
     String city;
+    String level;
 }

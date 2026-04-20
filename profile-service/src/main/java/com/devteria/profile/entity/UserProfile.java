@@ -1,11 +1,12 @@
 package com.devteria.profile.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import lombok.*;
@@ -23,14 +24,23 @@ public class UserProfile {
     @GeneratedValue(generatorClass = UUIDStringGenerator.class)
     String id;
 
-    @Property("userId")
     String userId;
 
-    String avatar;
     String username;
-    String email;
     String firstName;
     String lastName;
-    LocalDate dob;
+
+    String avatar;
+    String bio;
+
     String city;
+    LocalDate dob;
+
+    String level;
+
+    @Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
+    Set<Follows> following;
+
+    @Relationship(type = "FOLLOWS", direction = Relationship.Direction.INCOMING)
+    Set<Follows> followers;
 }

@@ -72,4 +72,16 @@ public class UserProfileController {
                 .result(userProfileService.search(request))
                 .build();
     }
+
+    @PostMapping("/{userId}/follow")
+    ApiResponse<Void> follow(@PathVariable String userId) {
+        userProfileService.follow(userId);
+        return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("/{userId}/unfollow")
+    ApiResponse<Void> unfollow(@PathVariable String userId) {
+        userProfileService.unfollow(userId);
+        return ApiResponse.<Void>builder().build();
+    }
 }

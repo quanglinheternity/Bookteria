@@ -51,9 +51,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         log.info("token {}",token);
         //Verity Token
         return identityService.introspect(token).flatMap(introspectResponseApiResponse -> {
-            if (introspectResponseApiResponse.getResult().isValid())
-                return chain.filter(exchange);
-            else
+            if (introspectResponseApiResponse.getResult().isValid()) {
+                ServerHttpRequest request = exchange.getRequest().mutate()
+                        .header("X-User-Id", introspectResponseApiResponse.getResult().getUserId())
+                        .build();
+
+                return chain.filter(exchange.mutate().request(request).build());
+            } else
                 return unauthenticated(exchange.getResponse());
         }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
 
