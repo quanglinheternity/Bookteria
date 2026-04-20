@@ -13,6 +13,7 @@ import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.constant.PredefinedRole;
 import com.devteria.identity.dto.request.UserCreationRequest;
 import com.devteria.identity.dto.request.UserUpdateRequest;
+import com.devteria.identity.dto.response.UserProfileResponse;
 import com.devteria.identity.dto.response.UserResponse;
 import com.devteria.identity.entity.Role;
 import com.devteria.identity.entity.User;
@@ -56,7 +57,7 @@ public class UserService {
         var profileRequest = profileMapper.toUserProfileRequest(request);
         profileRequest.setUserId(user.getId());
 
-        profileClient.createProfile(profileRequest);
+        UserProfileResponse profileResponse = profileClient.createProfile(profileRequest);
 
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .channel("Email")
@@ -66,7 +67,13 @@ public class UserService {
                 .build();
         // public message to kafka
         kafkaTemplate.send("notification-delivery", notificationEvent);
-        return userMapper.toUserResponse(user);
+        UserResponse response = userMapper.toUserResponse(user);
+
+        response.setFirstName(profileResponse.getFirstName());
+        response.setLastName(profileResponse.getLastName());
+        response.setDob(profileResponse.getDob());
+
+        return response;
     }
 
     public UserResponse getMyInfo() {

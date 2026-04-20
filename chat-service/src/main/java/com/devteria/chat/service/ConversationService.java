@@ -67,14 +67,14 @@ public class ConversationService {
                     List<ParticipantInfo> participantInfos = List.of(
                             ParticipantInfo.builder()
                                     .userId(userInfo.getUserId())
-                                    .username(userInfo.getUserName())
+                                    .username(userInfo.getUsername())
                                     .firstName(userInfo.getFirstName())
                                     .lastName(userInfo.getLastName())
                                     .avatar(userInfo.getAvatar())
                                     .build(),
                             ParticipantInfo.builder()
                                     .userId(participantInfo.getUserId())
-                                    .username(participantInfo.getUserName())
+                                    .username(participantInfo.getUsername())
                                     .firstName(participantInfo.getFirstName())
                                     .lastName(participantInfo.getLastName())
                                     .avatar(participantInfo.getAvatar())

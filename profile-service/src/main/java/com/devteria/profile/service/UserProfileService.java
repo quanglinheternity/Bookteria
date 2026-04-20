@@ -101,7 +101,7 @@ public class UserProfileService {
 
     public List<UserProfileResponse> search(SearchUserRequest request) {
         var userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<UserProfile> userProfiles = userProfileRepository.findAllByUserNameLike(request.getKeyword());
+        List<UserProfile> userProfiles = userProfileRepository.findAllByUsernameLike(request.getKeyword());
         return userProfiles.stream()
                 .filter(userProfile -> !userId.equals(userProfile.getUserId()))
                 .map(userProfileMapper::toUserProfileResponse)

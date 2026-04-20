@@ -30,6 +30,7 @@ public class UserProfileController {
                 .result(userProfileService.getProfile(profileId))
                 .build();
     }
+
     @GetMapping("/internal/{userId}/detail")
     ApiResponse<UserProfileResponse> getUserId(@PathVariable String userId) {
         return ApiResponse.<UserProfileResponse>builder()

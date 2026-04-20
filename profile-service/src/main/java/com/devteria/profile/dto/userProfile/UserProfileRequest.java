@@ -14,7 +14,7 @@ public class UserProfileRequest {
     String userId;
     String firstName;
     String lastName;
-    String userName;
+    String username;
     String email;
     LocalDate dob;
     String city;

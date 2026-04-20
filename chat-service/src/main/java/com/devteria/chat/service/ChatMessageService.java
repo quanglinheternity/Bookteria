@@ -5,25 +5,25 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.corundumstudio.socketio.SocketIOServer;
-import com.devteria.chat.entity.WebSocketSession;
-import com.devteria.chat.repository.WebSocketSessionRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.devteria.chat.dto.request.ChatMessageRequest;
 import com.devteria.chat.dto.response.ChatMessageResponse;
 import com.devteria.chat.dto.response.UserProfileResponse;
 import com.devteria.chat.entity.ChatMessage;
 import com.devteria.chat.entity.ParticipantInfo;
+import com.devteria.chat.entity.WebSocketSession;
 import com.devteria.chat.exception.AppException;
 import com.devteria.chat.exception.ErrorCode;
 import com.devteria.chat.mapper.ChatMessageMapper;
 import com.devteria.chat.repository.ChatMessageRepository;
 import com.devteria.chat.repository.ConversationRepository;
+import com.devteria.chat.repository.WebSocketSessionRepository;
 import com.devteria.chat.repository.httpclient.ProfileClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -77,23 +77,22 @@ public class ChatMessageService {
         ChatMessage chatMessage = chatMessageMapper.toChatMessage(request);
         chatMessage.setSender(ParticipantInfo.builder()
                 .userId(userInfo.getUserId())
-                .username(userInfo.getUserName())
+                .username(userInfo.getUsername())
                 .firstName(userInfo.getFirstName())
                 .lastName(userInfo.getLastName())
                 .avatar(userInfo.getAvatar())
                 .build());
         chatMessage.setCreatedDate(Instant.now());
-        //crate chat message
+        // crate chat message
         chatMessage = chatMessageRepository.save(chatMessage);
         // publish socket envent to client is conversation
 
-        //get participant userIds;
-        List<String> userIds = conversation.getParticipants().stream().map(ParticipantInfo::getUserId).toList();
-        Map<String,WebSocketSession> webSocketSessions = webSocketSessionRepository.findAllByUserIdIn(userIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        WebSocketSession::getSocketSessionId,
-                        Function.identity()));
+        // get participant userIds;
+        List<String> userIds = conversation.getParticipants().stream()
+                .map(ParticipantInfo::getUserId)
+                .toList();
+        Map<String, WebSocketSession> webSocketSessions = webSocketSessionRepository.findAllByUserIdIn(userIds).stream()
+                .collect(Collectors.toMap(WebSocketSession::getSocketSessionId, Function.identity()));
 
         ChatMessageResponse chatMessageResponse = chatMessageMapper.toChatMessageResponse(chatMessage);
         socketIOServer.getAllClients().forEach(client -> {

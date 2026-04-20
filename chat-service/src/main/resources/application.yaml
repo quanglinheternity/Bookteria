@@ -14,4 +14,4 @@ app:
     profile:
       url: http://localhost:8081/profile
     identity:
-      url: http://localhost:8080/identity
+      url: http://localhost:8080/identity   

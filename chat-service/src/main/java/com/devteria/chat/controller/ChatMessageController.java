@@ -2,7 +2,6 @@ package com.devteria.chat.controller;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +10,7 @@ import com.devteria.chat.dto.ApiResponse;
 import com.devteria.chat.dto.request.ChatMessageRequest;
 import com.devteria.chat.dto.response.ChatMessageResponse;
 import com.devteria.chat.service.ChatMessageService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,8 @@ public class ChatMessageController {
     ChatMessageService chatMessageService;
 
     @PostMapping("/create")
-    ApiResponse<ChatMessageResponse> create(@RequestBody @Valid ChatMessageRequest request) throws JsonProcessingException {
+    ApiResponse<ChatMessageResponse> create(@RequestBody @Valid ChatMessageRequest request)
+            throws JsonProcessingException {
         return ApiResponse.<ChatMessageResponse>builder()
                 .result(chatMessageService.create(request))
                 .build();

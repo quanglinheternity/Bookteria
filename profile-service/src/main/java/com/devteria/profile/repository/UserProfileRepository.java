@@ -18,5 +18,5 @@ public interface UserProfileRepository extends Neo4jRepository<UserProfile, Stri
 		""")
     Optional<UserProfile> findByUserId(String userId);
 
-    List<UserProfile> findAllByUserNameLike(String username);
+    List<UserProfile> findAllByUsernameLike(String username);
 }
