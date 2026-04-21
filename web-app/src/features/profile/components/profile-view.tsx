@@ -24,9 +24,8 @@ import { EditProfileModal } from "./edit-profile-modal"
 import type { Post } from "@/lib/mock-data"
 import { UserProfile } from "@/types/user.type"
 import { userService } from "@/services/user.service"
-import { useToast } from "@/hooks/use-toast"
-
-const DEFAULT_AVATAR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK0AAACUCAMAAADWBFkUAAAAJFBMVEXU1NT////R0dH6+vrZ2dn19fXj4+Pe3t7u7u7y8vLm5ubp6eklnMeNAAADW0lEQVR4nO2b3RKjIAyFMYAovv/7rki7tVttFU4S3eG76fTuTObkBwzGNBqNRqPRaDQajUbjf4My2jJ+M2t0LvSJ4Jy5smQiF0dvre0S868fo7uoYBeGboshOG1pH4TJbmpdojwFbXlryI37Whe9o7uMIdy2Bf4xxEX80H+P69/49tpCE0cC+wivtlRyxwL7CK+ue6k/oTXRa8o9K3aWq6aVDubXGqsW3fORVYxuKBLbdSqN7VQ1WGM1+oQvFNt1XlwrTcViu24SzjQqNW0mCMst90FC2AtlxeuFbBmrC61scE+PB6rBpdJS+8KK5VllQciIlQUaAWpHKbXFPXeNVP8F5FhCanQ8fhL7htApzSFsOxtXxgoQ24oZF1G/EjJTOSbJhNoZYZJsTjOJogDpDQmR/kC189cTL6IWUxKEBpumtql9qL1Xlt2q3pqae481k4TYe3Xem00195oYDWgalxELSjOZJLvbKbL6FiwhdhMG6Q8yvSHhAGrlPj4ARgWRIeFBfYMQ/Qx1p9vm+uDKfuGrLAtyBSGrrSsL0nsKFCvERvHv6BVeEPbBgiutC15le6nUujqrVoWZprUJRKFgU0X6g3SNXEWx5vQZTXkh7NwhTeoo9oXjbSJqSzWpNBwrvF7bBQ+o/63Xq+4EvkEmftfro7mM2IWwn27jpRaxM2R6/1nPrO8vFtYnRC7EYXlDYJf3A0MMV31BsLBoc5nn30aj0bgF9Im2pE2SrLk3jO/zgh9jeq91Mc1kXBw2+m7uvUN0F+q+5KYdpS/F00WmWxMOTuP6k9g82R4/R1rtKffHFP4RX0W9d3qnQ4ceGH4yaOQbnTDsP+EVv76lqqv8QbhdFF/eZkTvFkouF98RvL2rFysot+oDyQuZXAOJlZELeZqR4TcDaPEjw97XQAtLGfa1JdQSY4b3Uzpsh/EJ52dJqGkzjNaFmjbDaF20DxJsz3VwlXYN03ENtoL9Ds9CNkOKZVgSrXKk3YdlX6H4ZPMLy/GNkiu0LB2NpyBk4GUB9vJpC/xrKEaxXQfWyla+MuAiBnvusg14v5VhnlmDnW2YjYC2Asf0tQY7iXHWrwR0P4jZtmDj3kstZ9vNIJsv6jJpH+Qchnqutw/wjRFzJ0sAu9nN1HKXhKNnyT+fFCdN3paSEgAAAABJRU5ErkJggg=="
+import { useToast } from "@/hooks/ui/useToast"
+import { DEFAULT_AVATAR } from "@/constants/image"
 
 interface ProfileViewProps {
   user: UserProfile

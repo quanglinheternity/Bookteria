@@ -7,11 +7,15 @@ import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import com.devteria.chat.dto.request.ChatMessageRequest;
 import com.devteria.chat.dto.response.ChatMessageResponse;
+import com.devteria.chat.dto.response.PageResponse;
 import com.devteria.chat.dto.response.UserProfileResponse;
 import com.devteria.chat.entity.ChatMessage;
 import com.devteria.chat.entity.ParticipantInfo;
@@ -45,7 +49,7 @@ public class ChatMessageService {
     ChatMessageMapper chatMessageMapper;
     HttpServletRequest request;
 
-    public List<ChatMessageResponse> getMessages(String conversationId) {
+    public PageResponse<ChatMessageResponse> getMessages(String conversationId, int page, int size) {
         String userId = request.getHeader("X-User-Id");
 
         // validate conversationId
@@ -56,12 +60,26 @@ public class ChatMessageService {
                 .filter(participantInfo -> userId.equals(participantInfo.getUserId()))
                 .findAny()
                 .orElseThrow(() -> new AppException(ErrorCode.CONVERSATION_NOT_FOUND));
-        var messages = chatMessageRepository.findAllByConversationIdOrderByCreatedDateDesc(conversationId);
-        return messages.stream().map(this::toChatMessageResponse).toList();
+
+        Sort sort = Sort.by("createdDate").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = chatMessageRepository.findAllByConversationId(conversationId, pageable);
+
+        var messages =
+                pageData.getContent().stream().map(this::toChatMessageResponse).toList();
+
+        return PageResponse.<ChatMessageResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(messages)
+                .build();
     }
 
     public ChatMessageResponse create(ChatMessageRequest messageRequest) throws JsonProcessingException {
         String userId = request.getHeader("X-User-Id");
+        //        log.info("userId ,{}", userId);
         // validate conversationId
         var conversation = conversationRepository
                 .findById(messageRequest.getConversationId())

@@ -2,7 +2,7 @@
 
 import { POSTS } from "@/lib/mock-data"
 import { ProfileView } from "@/features/profile/components/profile-view"
-import { useUser } from "@/hooks/useUser"
+import { useUser } from "@/hooks/user/useUser"
 import { Loader2 } from "lucide-react"
 
 export default function MyProfilePage() {

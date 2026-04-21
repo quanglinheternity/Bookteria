@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Service;
 
 import com.devteria.chat.dto.request.ConversationRequest;
@@ -33,23 +34,26 @@ public class ConversationService {
     ProfileClient profileClient;
 
     ConversationMapper conversationMapper;
+    HttpServletRequest request;
 
     public List<ConversationResponse> myConversations() {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userId = request.getHeader("X-User-Id");
 
         List<Conversation> conversations = conversationRepository.findAllByParticipantIdsContains(userId);
 
         return conversations.stream().map(this::toConversationResponse).toList();
     }
 
-    public ConversationResponse create(ConversationRequest request) {
+    public ConversationResponse create(ConversationRequest conversationRequest) {
         // Fecth user infos
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        String userId = request.getHeader("X-User-Id");
+
         //        log.info(userId);
         //        log.info("resquest,{}",request.getParticipantIds());
         var userInfoResponse = profileClient.getProfile(userId);
         var participantInfoResponse =
-                profileClient.getProfile(request.getParticipantIds().getFirst());
+                profileClient.getProfile(conversationRequest.getParticipantIds().getFirst());
         if (Objects.isNull(userInfoResponse) || Objects.isNull(participantInfoResponse)) {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
@@ -80,7 +84,7 @@ public class ConversationService {
                                     .avatar(participantInfo.getAvatar())
                                     .build());
                     Conversation newConversation = Conversation.builder()
-                            .type(request.getType())
+                            .type(conversationRequest.getType())
                             .participantsHash(userIdHash)
                             .createdDate(Instant.now())
                             .modifiedDate(Instant.now())
@@ -100,8 +104,7 @@ public class ConversationService {
     }
 
     private ConversationResponse toConversationResponse(Conversation conversation) {
-        String currentUserId =
-                SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUserId = request.getHeader("X-User-Id");
 
         ConversationResponse conversationResponse = conversationMapper.toConversationResponse(conversation);
 

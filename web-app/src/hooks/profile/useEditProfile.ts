@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import { useForm, UseFormReturn } from "react-hook-form"
 import { UserProfile, UpdateProfileRequest } from "@/types/user.type"
 import { userService } from "@/services/user.service"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/ui/useToast"
 
 interface UseEditProfileProps {
   user: UserProfile

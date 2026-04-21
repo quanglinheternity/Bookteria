@@ -1,9 +1,11 @@
+"use client"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { authService } from "@/services/auth.service"
 import { tokenService } from "@/services/token.service"
 import { LoginRequest } from "@/types/auth.type"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/ui/useToast"
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(false)

@@ -27,7 +27,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/hooks/auth/useAuth"
 import { ROUTES } from "@/constants/routes"
 
 const NAV_ITEMS = [

@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserProfile } from "@/types/user.type"
-import { useEditProfile } from "@/hooks/useEditProfile"
+import { useEditProfile } from "@/hooks/profile/useEditProfile"
 
 interface EditProfileModalProps {
   user: UserProfile
@@ -113,9 +113,9 @@ export function EditProfileModal({
                 <FormItem>
                   <FormLabel>Tiểu sử</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      {...field} 
-                      placeholder="Chia sẻ đôi chút về bản thân bạn..." 
+                    <Textarea
+                      {...field}
+                      placeholder="Chia sẻ đôi chút về bản thân bạn..."
                       className="resize-none h-24"
                     />
                   </FormControl>

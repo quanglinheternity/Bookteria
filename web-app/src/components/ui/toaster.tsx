@@ -1,6 +1,6 @@
 'use client'
 
-import { useToast } from '@/hooks/use-toast'
+import { useToast } from '@/hooks/ui/useToast'
 import {
   Toast,
   ToastClose,
@@ -9,11 +9,11 @@ import {
   ToastTitle,
   ToastViewport,
 } from '@/components/ui/toast'
-import { 
-  CheckCircle2, 
-  AlertCircle, 
-  Info, 
-  AlertTriangle 
+import {
+  CheckCircle2,
+  AlertCircle,
+  Info,
+  AlertTriangle
 } from 'lucide-react'
 
 export function Toaster() {

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/hooks/auth/useAuth"
 import { ROUTES } from "@/constants/routes"
 
 export function LoginForm() {

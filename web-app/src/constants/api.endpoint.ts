@@ -12,4 +12,10 @@ export const API_ENDPOINTS = {
     UPDATE_AVATAR: `${API_BASE_URL}/profile/users/avatar`,
     SEARCH: `${API_BASE_URL}/profile/users/search`,
   },
+  CHAT: {
+    MY_CONVERSATIONS: `${API_BASE_URL}/chat/conversations/my-conversations`,
+    CREATE_CONVERSATION: `${API_BASE_URL}/chat/conversations/create`,
+    CREATE_MESSAGE: `${API_BASE_URL}/chat/messages/create`,
+    GET_CONVERSATION_MESSAGES: `${API_BASE_URL}/chat/messages`,
+  },
 } as const

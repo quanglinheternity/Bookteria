@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { userService } from "@/services/user.service"
 import { UserProfile } from "@/types/user.type"

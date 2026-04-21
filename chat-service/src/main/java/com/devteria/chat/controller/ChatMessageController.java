@@ -1,7 +1,5 @@
 package com.devteria.chat.controller;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import com.devteria.chat.dto.ApiResponse;
 import com.devteria.chat.dto.request.ChatMessageRequest;
 import com.devteria.chat.dto.response.ChatMessageResponse;
+import com.devteria.chat.dto.response.PageResponse;
 import com.devteria.chat.service.ChatMessageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -32,9 +31,12 @@ public class ChatMessageController {
     }
 
     @GetMapping
-    ApiResponse<List<ChatMessageResponse>> getMessages(@RequestParam("conversationId") String conversationId) {
-        return ApiResponse.<List<ChatMessageResponse>>builder()
-                .result(chatMessageService.getMessages(conversationId))
+    ApiResponse<PageResponse<ChatMessageResponse>> getMessages(
+            @RequestParam("conversationId") String conversationId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        return ApiResponse.<PageResponse<ChatMessageResponse>>builder()
+                .result(chatMessageService.getMessages(conversationId, page, size))
                 .build();
     }
 }
