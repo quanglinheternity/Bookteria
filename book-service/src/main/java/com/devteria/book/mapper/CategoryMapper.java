@@ -2,12 +2,13 @@ package com.devteria.book.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.devteria.book.dto.request.CategoryRequest;
 import com.devteria.book.dto.response.CategoryResponse;
 import com.devteria.book.entity.Category;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CategoryMapper {
     Category toCategory(CategoryRequest request);
 

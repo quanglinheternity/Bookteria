@@ -3,13 +3,14 @@ package com.devteria.profile.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.devteria.profile.dto.userProfile.UpdateProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileRequest;
 import com.devteria.profile.dto.userProfile.UserProfileResponse;
 import com.devteria.profile.entity.UserProfile;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserProfileMapper {
     UserProfile toUserProfile(UserProfileRequest request);
 

@@ -21,6 +21,10 @@ public enum ErrorCode {
     CATEGORY_EXISTED(1011, "Category existed", HttpStatus.BAD_REQUEST),
     CATEGORY_NAME_REQUIRED(1012, "Category name is required", HttpStatus.BAD_REQUEST),
     CATEGORY_NAME_TOO_LONG(1013, "Category name is too long", HttpStatus.BAD_REQUEST),
+    AUTHOR_NOT_FOUND(1020, "Author not found", HttpStatus.NOT_FOUND),
+    AUTHOR_NAME_REQUIRED(1021, "Author name is required", HttpStatus.BAD_REQUEST),
+    AUTHOR_NAME_TOO_LONG(1022, "Author name is too long", HttpStatus.BAD_REQUEST),
+    AVATAR_URL_TOO_LONG(1023, "Avatar URL is too long", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
