@@ -34,7 +34,7 @@ public class ChatMessageController {
     ApiResponse<PageResponse<ChatMessageResponse>> getMessages(
             @RequestParam("conversationId") String conversationId,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size) {
         return ApiResponse.<PageResponse<ChatMessageResponse>>builder()
                 .result(chatMessageService.getMessages(conversationId, page, size))
                 .build();
