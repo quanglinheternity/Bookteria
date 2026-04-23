@@ -1,6 +1,6 @@
 import axios from "axios"
 import { API_BASE_URL } from "@/constants/api.endpoint"
-import { authService } from "@/services/auth.service"
+import { authService } from "@/features/auth"
 import { tokenService } from "@/services/token.service"
 import { ROUTES } from "@/constants/routes"
 
@@ -42,11 +42,15 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${newToken}`
           return axiosInstance(originalRequest)
         }
-      } catch (refreshError) {
+      } catch (refreshError: any) {
         console.error("Token refresh failed:", refreshError)
-        // Refresh failed, redirect to login
-        if (typeof window !== "undefined") {
-          window.location.href = ROUTES.LOGIN
+        
+        // Only redirect to login if the refresh attempt actually failed with a definitive "Invalid Token" response
+        // If the identity service is simply down, we don't want to kick the user out.
+        if (refreshError.response && refreshError.response.status >= 400 && refreshError.response.status < 500) {
+          if (typeof window !== "undefined") {
+            window.location.href = ROUTES.LOGIN
+          }
         }
       }
     }

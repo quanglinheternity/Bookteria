@@ -25,6 +25,11 @@ public enum ErrorCode {
     AUTHOR_NAME_REQUIRED(1021, "Author name is required", HttpStatus.BAD_REQUEST),
     AUTHOR_NAME_TOO_LONG(1022, "Author name is too long", HttpStatus.BAD_REQUEST),
     AVATAR_URL_TOO_LONG(1023, "Avatar URL is too long", HttpStatus.BAD_REQUEST),
+    BOOK_NOT_FOUND(1030, "Book not found", HttpStatus.NOT_FOUND),
+    ISBN_TOO_LONG(1031, "ISBN is too long", HttpStatus.BAD_REQUEST),
+    TITLE_REQUIRED(1032, "Title is required", HttpStatus.BAD_REQUEST),
+    TITLE_TOO_LONG(1033, "Title is too long", HttpStatus.BAD_REQUEST),
+    BOOK_EXISTED(1034, "Book already exists", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.devteria.book.configuration.AuthenticationRequestInterceptor;
-import com.devteria.book.dto.request.ApiResponse;
+import com.devteria.book.dto.ApiResponse;
 import com.devteria.book.dto.response.FileResponse;
 
 @FeignClient(

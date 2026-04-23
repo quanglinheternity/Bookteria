@@ -20,8 +20,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { UserProfile } from "@/types/user.type"
-import { useEditProfile } from "@/hooks/profile/useEditProfile"
+import { UserProfile } from "../types/user.type"
+import { useEditProfile } from "../hooks/useEditProfile"
 
 interface EditProfileModalProps {
   user: UserProfile

@@ -1,14 +1,14 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { useConversations } from "@/hooks/chat/useChat"
-import { useUser } from "@/hooks/user/useUser"
+import { useConversations } from "../hooks/useChat"
+import { useUser } from "@/features/profile"
 import { socketConfig } from "@/configurations/socket"
 import { ConversationList } from "./conversation-list"
 import { ChatWindow } from "./chat-window"
 
 export function MessagesView() {
-  const { userData } = useUser()
+  const { user } = useUser()
   const { conversations, isLoading, refresh } = useConversations()
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [showListOnMobile, setShowListOnMobile] = useState(true)
@@ -45,7 +45,7 @@ export function MessagesView() {
           selectedConversationId={selectedConversationId}
           onSelectConversation={handleSelectConversation}
           onRefresh={refresh}
-          currentUserId={userData?.userId}
+          currentUserId={user?.userId}
         />
       </div>
 
@@ -58,7 +58,7 @@ export function MessagesView() {
           <ChatWindow
             conversation={selectedConversation}
             onBack={() => setShowListOnMobile(true)}
-            currentUserId={userData?.userId}
+            currentUserId={user?.userId}
           />
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center text-center p-8">

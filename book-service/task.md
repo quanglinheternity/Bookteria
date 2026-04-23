@@ -1,0 +1,7 @@
+- [x] Create `UserBookShelfRepositoryCustom.java` in `repository/bookshelf/`
+- [x] Create `UserBookShelfRepositoryCustomImpl.java` in `repository/bookshelf/`
+- [x] Create `UserBookShelfRepository.java` in `repository/bookshelf/`
+- [x] Delete obsolete `UserBookShelfRepository.java` in `repository/`
+- [x] Update `BookshelfService.java` imports and method calls
+- [x] Update all Controllers in the package to use `ResponseEntity` and RESTful paths
+- [x] Verify build with `./mvnw compile`

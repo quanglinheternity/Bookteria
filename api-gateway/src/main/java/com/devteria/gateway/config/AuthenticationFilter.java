@@ -34,22 +34,24 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     ObjectMapper objectMapper;
     @NonFinal
     String[] publicEndpoints = {
-            "/identity/auth/.*","/identity/users/registration",
-            "/notification/email/send","/file/media/download/.*"
+            "/identity/auth/.*", "/identity/users/registration",
+            "/notification/email/send", "/file/media/download/.*",
+            ".*/v3/api-docs.*", ".*/swagger-ui.*"
     };
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("Enter authentication filter ...");
         if (isPublicEndpoint(exchange.getRequest()))
             return chain.filter(exchange);
-        //get token from authentication header
+
+        // Get token from Header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (CollectionUtils.isEmpty(authHeader)){
-            return unauthenticated(exchange.getResponse());
+        if (CollectionUtils.isEmpty(authHeader)) {
+            return writeErrorResponse(exchange.getResponse(), HttpStatus.UNAUTHORIZED, "Unauthenticated");
         }
-        String token = authHeader.getFirst().replace("Bearer ","");
-        log.info("token {}",token);
-        //Verity Token
+
+        String token = authHeader.getFirst().replace("Bearer ", "");
+
+        // Verify Token
         return identityService.introspect(token).flatMap(introspectResponseApiResponse -> {
             if (introspectResponseApiResponse.getResult().isValid()) {
                 ServerHttpRequest request = exchange.getRequest().mutate()
@@ -57,37 +59,45 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         .build();
 
                 return chain.filter(exchange.mutate().request(request).build());
-            } else
-                return unauthenticated(exchange.getResponse());
-        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
-
+            } else {
+                return writeErrorResponse(exchange.getResponse(), HttpStatus.UNAUTHORIZED, "Unauthenticated");
+            }
+        }).onErrorResume(throwable -> {
+            log.error("Authentication error: {}", throwable.getMessage());
+            if (throwable instanceof java.net.ConnectException
+                    || throwable.getMessage().contains("Connection refused")
+                    || throwable.getMessage().contains("Service Unavailable")) {
+                return writeErrorResponse(exchange.getResponse(), HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable");
+            }
+            return writeErrorResponse(exchange.getResponse(), HttpStatus.INTERNAL_SERVER_ERROR, "Internal error");
+        });
     }
 
     @Override
     public int getOrder() {
         return -1;
     }
-    private boolean isPublicEndpoint(ServerHttpRequest request){
+
+    private boolean isPublicEndpoint(ServerHttpRequest request) {
         String path = request.getURI().getPath();
-        return Arrays.stream(publicEndpoints)
-                .anyMatch(path::matches);
+        return Arrays.stream(publicEndpoints).anyMatch(path::matches);
     }
-    Mono<Void> unauthenticated(ServerHttpResponse response){
+
+    private Mono<Void> writeErrorResponse(ServerHttpResponse response, HttpStatus status, String message) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .code(1401)
-                .message("Unauthenticated")
+                .code(status.value())
+                .message(message)
                 .build();
-        String body = null;
+
+        String body = "";
         try {
             body = objectMapper.writeValueAsString(apiResponse);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to serialize error response", e);
         }
 
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        response.setStatusCode(status);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return response.writeWith(
-                Mono.just(response.bufferFactory().wrap(body.getBytes()))
-        );
+        return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 }

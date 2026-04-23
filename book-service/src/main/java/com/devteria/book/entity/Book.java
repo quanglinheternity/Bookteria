@@ -4,17 +4,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -72,6 +62,9 @@ public class Book extends BaseEntity {
     @Column(name = "cover_image_url", length = 500)
     String coverImageUrl;
 
+    @Column(name = "book_file_url", length = 500)
+    String bookFileUrl;
+
     @Builder.Default
     @Column(name = "average_rating", precision = 3, scale = 2)
     BigDecimal averageRating = BigDecimal.ZERO;
@@ -84,11 +77,11 @@ public class Book extends BaseEntity {
     @Column(name = "total_reads")
     Integer totalReads = 0;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),

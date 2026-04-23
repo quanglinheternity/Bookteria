@@ -1,13 +1,9 @@
 package com.devteria.book.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,4 +40,7 @@ public class Author extends BaseEntity {
 
     @Column(name = "avatar_url", length = 500)
     String avatarUrl;
+
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
+    Set<Book> books;
 }

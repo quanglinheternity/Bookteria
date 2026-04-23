@@ -2,11 +2,11 @@
 
 import { POSTS } from "@/lib/mock-data"
 import { ProfileView } from "@/features/profile/components/profile-view"
-import { useUser } from "@/hooks/user/useUser"
+import { useUser } from "@/features/profile"
 import { Loader2 } from "lucide-react"
 
 export default function MyProfilePage() {
-  const { userData, isLoading, error, refreshProfile } = useUser()
+  const { user, isLoading, error, refresh: refreshProfile } = useUser()
 
   if (isLoading) {
     return (
@@ -21,7 +21,7 @@ export default function MyProfilePage() {
     )
   }
 
-  if (error || !userData) {
+  if (error || !user) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background px-6 text-center">
         <div className="rounded-2xl bg-destructive/10 p-6 text-destructive">
@@ -42,7 +42,7 @@ export default function MyProfilePage() {
 
   return (
     <ProfileView 
-      user={userData} 
+      user={user} 
       posts={POSTS} 
       isOwnProfile 
       onProfileUpdate={refreshProfile}

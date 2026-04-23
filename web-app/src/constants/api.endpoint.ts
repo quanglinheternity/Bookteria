@@ -18,4 +18,9 @@ export const API_ENDPOINTS = {
     CREATE_MESSAGE: `${API_BASE_URL}/chat/messages/create`,
     GET_CONVERSATION_MESSAGES: `${API_BASE_URL}/chat/messages`,
   },
+  BOOK: {
+    BOOKS: `${API_BASE_URL}/book/api/v1/books`,
+    CATEGORIES: `${API_BASE_URL}/book/api/v1/categories`,
+    AUTHORS: `${API_BASE_URL}/book/api/v1/authors`,
+  },
 } as const

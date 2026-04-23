@@ -10,7 +10,10 @@ import {
   Bell,
   MessageCircle,
   User,
+  Users,
   LogOut,
+  BookOpen,
+  Layers,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -27,13 +30,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/hooks/auth/useAuth"
+import { useAuth } from "@/features/auth"
 import { ROUTES } from "@/constants/routes"
 
 const NAV_ITEMS = [
   { href: ROUTES.HOME, icon: Home, label: "Feed" },
   { href: ROUTES.EXPLORE, icon: Search, label: "Explore" },
   { href: ROUTES.MAP, icon: Map, label: "Map" },
+  { href: ROUTES.BOOKS, icon: BookOpen, label: "Books" },
+  { href: ROUTES.CATEGORIES, icon: Layers, label: "Categories" },
+  { href: ROUTES.AUTHORS, icon: Users, label: "Authors" },
   { href: ROUTES.CREATE, icon: PlusSquare, label: "Create" },
   { href: ROUTES.NOTIFICATIONS, icon: Bell, label: "Notifications" },
   { href: ROUTES.MESSAGES, icon: MessageCircle, label: "Messages" },

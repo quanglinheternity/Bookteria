@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import com.devteria.book.dto.request.ApiResponse;
+import com.devteria.book.dto.ApiResponse;
 import com.devteria.book.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

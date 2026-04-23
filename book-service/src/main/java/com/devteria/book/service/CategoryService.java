@@ -2,17 +2,17 @@ package com.devteria.book.service;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.devteria.book.dto.request.CategoryRequest;
+import com.devteria.book.dto.request.CategorySearchRequest;
 import com.devteria.book.dto.response.CategoryResponse;
 import com.devteria.book.dto.response.PageResponse;
 import com.devteria.book.entity.Category;
 import com.devteria.book.exception.AppException;
 import com.devteria.book.exception.ErrorCode;
 import com.devteria.book.mapper.CategoryMapper;
-import com.devteria.book.repository.CategoryRepository;
+import com.devteria.book.repository.category.CategoryRepository;
 import com.devteria.book.utils.SlugUtil;
 
 import lombok.AccessLevel;
@@ -39,10 +39,9 @@ public class CategoryService {
         return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
-    public PageResponse<CategoryResponse> getAll(int page, int size) {
-        Sort sort = Sort.by("name").ascending();
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        var pageData = categoryRepository.findAll(pageable);
+    public PageResponse<CategoryResponse> getAll(int page, int size, CategorySearchRequest criteria) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        var pageData = categoryRepository.searchCategories(criteria, pageable);
 
         return PageResponse.<CategoryResponse>builder()
                 .currentPage(page)

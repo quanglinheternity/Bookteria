@@ -36,3 +36,15 @@ spring:
           predicates:
             - Path=/book/**
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: identity-service
+        url: /identity/v3/api-docs
+      - name: book-service
+        url: /book/v3/api-docs
+

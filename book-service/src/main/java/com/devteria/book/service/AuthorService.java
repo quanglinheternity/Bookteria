@@ -2,10 +2,10 @@ package com.devteria.book.service;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.devteria.book.dto.request.AuthorCreationRequest;
+import com.devteria.book.dto.request.AuthorSearchRequest;
 import com.devteria.book.dto.request.AuthorUpdateRequest;
 import com.devteria.book.dto.response.AuthorResponse;
 import com.devteria.book.dto.response.PageResponse;
@@ -13,7 +13,7 @@ import com.devteria.book.entity.Author;
 import com.devteria.book.exception.AppException;
 import com.devteria.book.exception.ErrorCode;
 import com.devteria.book.mapper.AuthorMapper;
-import com.devteria.book.repository.AuthorRepository;
+import com.devteria.book.repository.author.AuthorRepository;
 import com.devteria.book.repository.httpclient.FileClient;
 
 import lombok.AccessLevel;
@@ -41,10 +41,9 @@ public class AuthorService {
         return authorMapper.toAuthorResponse(authorRepository.save(author));
     }
 
-    public PageResponse<AuthorResponse> getAll(int page, int size) {
-        Sort sort = Sort.by("name").ascending();
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-        var pageData = authorRepository.findAll(pageable);
+    public PageResponse<AuthorResponse> getAll(int page, int size, AuthorSearchRequest criteria) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        var pageData = authorRepository.searchAuthors(criteria, pageable);
 
         return PageResponse.<AuthorResponse>builder()
                 .currentPage(page)
