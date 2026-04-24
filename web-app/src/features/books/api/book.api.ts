@@ -74,5 +74,6 @@ export const bookApi = {
     const response = await axiosInstance.delete(
       `${API_ENDPOINTS.BOOK.BOOKS}/${id}/delete`
     )
+    return response.data
   },
 }

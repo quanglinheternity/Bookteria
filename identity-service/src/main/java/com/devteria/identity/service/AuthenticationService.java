@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,11 @@ public class AuthenticationService {
         // Invalidate refresh token cũ
         InvalidatedToken invalidatedToken =
                 InvalidatedToken.builder().id(jti).expiryTime(expiryTime).build();
-        invalidatedTokenRepository.save(invalidatedToken);
+        try {
+            invalidatedTokenRepository.save(invalidatedToken);
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Token already invalidated: {}", jti);
+        }
 
         String username = signedJWT.getJWTClaimsSet().getSubject();
         var user =
@@ -113,8 +118,12 @@ public class AuthenticationService {
         String jti = signedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-        invalidatedTokenRepository.save(
-                InvalidatedToken.builder().id(jti).expiryTime(expiryTime).build());
+        try {
+            invalidatedTokenRepository.save(
+                    InvalidatedToken.builder().id(jti).expiryTime(expiryTime).build());
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Token already invalidated: {}", jti);
+        }
     }
 
     // ====================== INTROSPECT ======================

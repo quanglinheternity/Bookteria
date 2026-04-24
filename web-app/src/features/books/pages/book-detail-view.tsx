@@ -26,12 +26,39 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from "@/hooks/ui/useToast"
 
 export function BookDetailView() {
   const { id } = useParams()
   const router = useRouter()
   const [book, setBook] = useState<Book | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const { toast } = useToast()
+
+  const handleShare = async () => {
+    if (!book) return
+
+    const shareData = {
+      title: book.title,
+      text: `Hãy cùng đọc cuốn sách "${book.title}" trên Bookteria nhé!`,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+        toast.success("Thành công", "Cảm ơn bạn đã chia sẻ!")
+      } else {
+        await navigator.clipboard.writeText(window.location.href)
+        toast.success("Đã sao chép", "Đường dẫn đã được lưu vào bộ nhớ tạm.")
+      }
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error("Error sharing:", err)
+        toast.error("Lỗi", "Không thể chia sẻ cuốn sách này.")
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -75,7 +102,7 @@ export function BookDetailView() {
           <Button variant="outline" size="sm" onClick={() => router.push("/books")}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Quay lại
           </Button>
-          <Button variant="outline" size="sm">
+           <Button variant="outline" size="sm" onClick={handleShare}>
             <Share2 className="mr-2 h-4 w-4" /> Chia sẻ
           </Button>
         </div>
