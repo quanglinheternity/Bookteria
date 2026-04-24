@@ -1,13 +1,13 @@
 package com.devteria.post.dto.response;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
-
 import java.time.Instant;
+import java.util.List;
+
+import com.devteria.post.constant.PostType;
+import com.devteria.post.constant.Visibility;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
@@ -16,10 +16,23 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
     String id;
+    UserProfileResponse user;
+    Long bookId;
     String content;
-    String userId;
-    String userName;
+    PostType postType;
+    List<String> imageUrls;
+    String imageLayout;
+    String videoUrl;
+
+    long likeCount;
+    long commentCount;
+    long shareCount;
+
+    Visibility visibility;
+    @com.fasterxml.jackson.annotation.JsonProperty("isLiked")
+    boolean isLiked;
+
     String created;
-    Instant createdDate;
-    Instant modifiedDate;
+    Instant createdAt;
+    Instant updatedAt;
 }

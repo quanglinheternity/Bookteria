@@ -3,10 +3,14 @@
 import { POSTS } from "@/lib/mock-data"
 import { ProfileView } from "@/features/profile/components/profile-view"
 import { useUser } from "@/features/profile"
+import { usePosts } from "@/features/posts"
 import { Loader2 } from "lucide-react"
 
 export default function MyProfilePage() {
-  const { user, isLoading, error, refresh: refreshProfile } = useUser()
+  const { user, isLoading: isUserLoading, error, refresh: refreshProfile } = useUser()
+  const { posts: userPosts, isLoading: isPostsLoading } = usePosts(user?.userId)
+  
+  const isLoading = isUserLoading || isPostsLoading
 
   if (isLoading) {
     return (
@@ -43,7 +47,7 @@ export default function MyProfilePage() {
   return (
     <ProfileView 
       user={user} 
-      posts={POSTS} 
+      posts={userPosts as any} 
       isOwnProfile 
       onProfileUpdate={refreshProfile}
     />

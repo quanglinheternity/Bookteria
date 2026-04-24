@@ -3,6 +3,9 @@ export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   EXPLORE: "/explore",
+  // POSTS: "/explore", // I'll map it to explore for now since that's where the feed is, or create a new route.
+  // // Actually, user might want a separate route or to rename Explore.
+  // // I'll add POSTS: "/posts" and the user can decide.
   MESSAGES: "/messages",
   NOTIFICATIONS: "/notifications",
   PROFILE: "/profile",

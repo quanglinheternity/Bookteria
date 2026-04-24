@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: `${API_BASE_URL}/profile/users/my-profile`,
     UPDATE_AVATAR: `${API_BASE_URL}/profile/users/avatar`,
     SEARCH: `${API_BASE_URL}/profile/users/search`,
+    GET_PROFILE_BY_USERID: (userId: string) => `${API_BASE_URL}/profile/users/internal/${userId}/detail`,
   },
   CHAT: {
     MY_CONVERSATIONS: `${API_BASE_URL}/chat/conversations/my-conversations`,
@@ -22,5 +23,9 @@ export const API_ENDPOINTS = {
     BOOKS: `${API_BASE_URL}/book/api/v1/books`,
     CATEGORIES: `${API_BASE_URL}/book/api/v1/categories`,
     AUTHORS: `${API_BASE_URL}/book/api/v1/authors`,
+  },
+  POST: {
+    POSTS: `${API_BASE_URL}/posts/api/v1/posts`,
+    COMMENTS: `${API_BASE_URL}/posts/api/v1/comments`,
   },
 } as const

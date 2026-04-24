@@ -15,6 +15,7 @@ import {
   MessageCircle,
   User,
   Map,
+  Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,6 +31,7 @@ import { cn } from "@/lib/utils"
 const NAV_ITEMS = [
   { href: ROUTES.HOME, icon: Home, label: "Feed" },
   { href: ROUTES.EXPLORE, icon: Search, label: "Explore" },
+  // { href: ROUTES.POSTS, icon: Sparkles, label: "Bài viết" },
   { href: ROUTES.MAP, icon: Map, label: "Map" },
   { href: ROUTES.BOOKS, icon: BookOpen, label: "Books" },
   { href: ROUTES.CATEGORIES, icon: Layers, label: "Categories" },
@@ -79,8 +81,8 @@ export function MobileNav() {
                   onClick={() => setOpen(false)}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
-                    isActive 
-                      ? "bg-primary/10 text-primary" 
+                    isActive
+                      ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >

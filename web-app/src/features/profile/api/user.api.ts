@@ -43,4 +43,12 @@ export const userApi = {
     const response = await axiosInstance.post(API_ENDPOINTS.USER.SEARCH, { keyword })
     return response.data
   },
+
+  /**
+   * Fetches a specific user's profile by their user ID.
+   */
+  async getProfileByUserId(userId: string): Promise<any> {
+    const response = await axiosInstance.get(API_ENDPOINTS.USER.GET_PROFILE_BY_USERID(userId))
+    return response.data
+  },
 }

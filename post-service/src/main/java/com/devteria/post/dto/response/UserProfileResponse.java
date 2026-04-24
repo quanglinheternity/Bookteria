@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +16,13 @@ public class UserProfileResponse {
     String lastName;
     LocalDate dob;
     String city;
+    String avatar;
+    String bio;
+    String level;
+    String userId;
+    long followersCount;
+    long followingCount;
+    long postsCount;
+
+    Boolean isFollowing;
 }

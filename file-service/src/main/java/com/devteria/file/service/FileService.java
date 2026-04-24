@@ -46,4 +46,47 @@ public class FileService {
         var resource =  fileRepository.read(fileMgmt);
         return new FileData(fileMgmt.getContentType(),resource);
     }
+
+    public void deleteFile(String fileName) throws IOException {
+        FileMgmt fileMgmt = fileMgmtRepository.findById(fileName)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_FOUND));
+
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!fileMgmt.getOwnerId().equals(currentUserId)) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        fileRepository.delete(fileMgmt.getPath());
+        fileMgmtRepository.delete(fileMgmt);
+    }
+
+    public FileResponse updateFile(String fileName, MultipartFile file) throws IOException {
+        FileMgmt fileMgmt = fileMgmtRepository.findById(fileName)
+                .orElseThrow(() -> new AppException(ErrorCode.FILE_NOT_FOUND));
+
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!fileMgmt.getOwnerId().equals(currentUserId)) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        // Delete old file
+        fileRepository.delete(fileMgmt.getPath());
+
+        // Store new file
+        FileInfo fileInfo = fileRepository.store(file);
+        
+        // Update metadata
+        fileMgmt.setPath(fileInfo.getPath());
+//        fileMgmt.setUrl(fileInfo.getUrl());
+        fileMgmt.setSize(fileInfo.getSize());
+        fileMgmt.setContentType(fileInfo.getContentType());
+        fileMgmt.setMd5Checksum(fileInfo.getMd5Checksum());
+        
+        fileMgmtRepository.save(fileMgmt);
+
+        return FileResponse.builder()
+                .originalFileName(file.getOriginalFilename())
+                .url(fileInfo.getUrl())
+                .build();
+    }
 }

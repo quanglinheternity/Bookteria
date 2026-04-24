@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Ubuntu)"
 )
 @Component
 public class FileMgmtMapperImpl implements FileMgmtMapper {
@@ -22,9 +22,9 @@ public class FileMgmtMapperImpl implements FileMgmtMapper {
 
         fileMgmt.id( fileInfo.getName() );
         fileMgmt.contentType( fileInfo.getContentType() );
+        fileMgmt.size( fileInfo.getSize() );
         fileMgmt.md5Checksum( fileInfo.getMd5Checksum() );
         fileMgmt.path( fileInfo.getPath() );
-        fileMgmt.size( fileInfo.getSize() );
 
         return fileMgmt.build();
     }

@@ -14,10 +14,11 @@ import {
   LogOut,
   BookOpen,
   Layers,
+  Sparkles,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CURRENT_USER } from "@/lib/mock-data"
+import { DEFAULT_AVATAR } from "@/constants/image"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,11 +32,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/features/auth"
+import { useUser } from "@/features/profile/hooks/useUser"
 import { ROUTES } from "@/constants/routes"
 
 const NAV_ITEMS = [
   { href: ROUTES.HOME, icon: Home, label: "Feed" },
   { href: ROUTES.EXPLORE, icon: Search, label: "Explore" },
+  // { href: ROUTES.POSTS, icon: Sparkles, label: "Bài viết" },
   { href: ROUTES.MAP, icon: Map, label: "Map" },
   { href: ROUTES.BOOKS, icon: BookOpen, label: "Books" },
   { href: ROUTES.CATEGORIES, icon: Layers, label: "Categories" },
@@ -49,6 +52,7 @@ const NAV_ITEMS = [
 export function DesktopSidebar() {
   const pathname = usePathname()
   const { logout } = useAuth()
+  const { user, isLoading: isUserLoading } = useUser()
 
   return (
     <aside className="fixed left-0 top-0 z-50 hidden h-screen w-[240px] flex-col border-r border-border bg-card md:flex xl:w-[280px]">
@@ -116,24 +120,24 @@ export function DesktopSidebar() {
       <div className="border-t border-border p-4">
         <div className="flex items-center justify-between gap-2">
           <Link
-            href="/profile"
+            href={`/profile/${user?.userId || ""}`}
             className="flex flex-1 items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted"
           >
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={CURRENT_USER.avatar || "/placeholder.svg"}
-                alt={`${CURRENT_USER.firstName} ${CURRENT_USER.lastName}`}
+                src={user?.avatar || DEFAULT_AVATAR}
+                alt={`${user?.firstName || ""} ${user?.lastName || ""}`}
               />
               <AvatarFallback>
-                {CURRENT_USER.firstName.charAt(0)}
+                {user?.firstName?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-semibold text-foreground">
-                {CURRENT_USER.firstName} {CURRENT_USER.lastName}
+                {user?.firstName} {user?.lastName}
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                @{CURRENT_USER.username}
+                @{user?.username || (user?.username?.split("@")[0])}
               </p>
             </div>
           </Link>

@@ -33,4 +33,19 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_TYPE,fileData.contentType())
                 .body(fileData.resource());
     }
+
+    @DeleteMapping("/media/{fileName}")
+    ApiResponse<Void> deleteMedia(@PathVariable String fileName) throws IOException {
+        fileService.deleteFile(fileName);
+        return ApiResponse.<Void>builder()
+                .message("File deleted successfully")
+                .build();
+    }
+
+    @PutMapping("/media/{fileName}")
+    ApiResponse<FileResponse> updateMedia(@PathVariable String fileName, @RequestParam("file") MultipartFile file) throws IOException {
+        return ApiResponse.<FileResponse>builder()
+                .result(fileService.updateFile(fileName, file))
+                .build();
+    }
 }

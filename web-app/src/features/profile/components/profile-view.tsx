@@ -14,14 +14,16 @@ import {
   Award,
   Heart,
   Loader2,
+  Table as FeedIcon,
 } from "lucide-react"
+import { PostCard, usePosts } from "@/features/posts"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EditProfileModal } from "./edit-profile-modal"
-import type { Post } from "@/lib/mock-data"
+import { PostResponse } from "@/features/posts/types/post.type"
 import { UserProfile } from "../types/user.type"
 import { userService } from "../services/user.service"
 import { useToast } from "@/hooks/ui/useToast"
@@ -29,7 +31,7 @@ import { DEFAULT_AVATAR } from "@/constants/image"
 
 interface ProfileViewProps {
   user: UserProfile
-  posts: Post[]
+  posts: PostResponse[]
   isOwnProfile?: boolean
   showBackButton?: boolean
   onProfileUpdate?: () => void
@@ -49,9 +51,15 @@ export function ProfileView({
   const [following, setFollowing] = useState(user.isFollowing)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isAvatarUploading, setIsAvatarUploading] = useState(false)
+  const [viewMode, setViewMode] = useState<"grid" | "feed">("grid")
 
-  const userPosts = posts.filter((p) => p.author.id === user.id)
-  const savedPosts = posts.filter((p) => p.isSaved)
+  const { 
+    posts: userPosts, 
+    isLoading: isPostsLoading, 
+    pagination, 
+    refresh: refreshPosts 
+  } = usePosts(user.userId, 1, 10, isOwnProfile)
+  const savedPosts = posts.filter((p: any) => p.isSaved)
 
   const handleAvatarClick = () => {
     if (isOwnProfile) {
@@ -169,13 +177,13 @@ export function ProfileView({
             <div className="mt-5 flex gap-8">
               <div className="flex flex-col items-center">
                 <span className="text-xl font-bold text-foreground">
-                  {user.postsCount}
+                  {pagination.totalElements || 0}
                 </span>
                 <span className="text-xs text-muted-foreground">Posts</span>
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-xl font-bold text-foreground">
-                  {user.followersCount.toLocaleString()}
+                  {(user.followersCount || 0).toLocaleString()}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   Followers
@@ -246,13 +254,6 @@ export function ProfileView({
             </span>
           </div>
           <div className="flex items-center gap-2 rounded-full bg-muted px-4 py-2">
-            <MapPin className="h-4 w-4 text-accent" />
-            <span className="text-xs font-medium text-foreground">
-              {new Set(userPosts.map((p) => p.location.province)).size}{" "}
-              provinces
-            </span>
-          </div>
-          <div className="flex items-center gap-2 rounded-full bg-muted px-4 py-2">
             <Award className="h-4 w-4 text-primary" />
             <span className="text-xs font-medium text-foreground">
               {user.level}
@@ -282,30 +283,61 @@ export function ProfileView({
           </TabsList>
 
           <TabsContent value="posts" className="mt-0">
+            <div className="flex justify-end px-4 py-2 gap-2 border-b border-border/50 bg-muted/10">
+              <Button
+                variant={viewMode === "grid" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => setViewMode("grid")}
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "feed" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => setViewMode("feed")}
+              >
+                <FeedIcon className="h-4 w-4" />
+              </Button>
+            </div>
+
             {userPosts.length > 0 ? (
-              <div className="grid grid-cols-3 gap-1 p-1 lg:grid-cols-4">
-                {userPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/post/${post.id}`}
-                    className="group relative aspect-square overflow-hidden rounded-md"
-                  >
-                    <Image
-                      src={post.images[0] || "/placeholder.svg"}
-                      alt={`Post by ${user.firstName} ${user.lastName}`}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                      sizes="(max-width: 1024px) 33vw, 25vw"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 opacity-0 transition-all group-hover:bg-foreground/30 group-hover:opacity-100">
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-card">
-                        <Heart className="h-4 w-4 fill-current" />
-                        {post.likesCount}
+              viewMode === "grid" ? (
+                <div className="grid grid-cols-3 gap-1 p-1 lg:grid-cols-4">
+                  {userPosts.map((post) => (
+                    <Link
+                      key={post.id}
+                      href={`/post/${post.id}`}
+                      className="group relative aspect-square overflow-hidden rounded-md"
+                    >
+                      {post.imageUrls && post.imageUrls.length > 0 ? (
+                        <img
+                          src={post.imageUrls[0]}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-secondary/20">
+                          <Camera className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center gap-6 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                        <div className="flex items-center gap-1.5 text-white">
+                          <Heart className="h-5 w-5 fill-current" />
+                          <span className="font-bold">{post.likeCount}</span>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-6 p-4 max-w-2xl mx-auto">
+                  {userPosts.map((post) => (
+                    <PostCard key={post.id} post={post as any} />
+                  ))}
+                </div>
+              )
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <Camera className="h-12 w-12" strokeWidth={1} />

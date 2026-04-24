@@ -56,4 +56,17 @@ export const userService = {
       throw error
     }
   },
+
+  /**
+   * Orchestrates fetching any user profile by ID.
+   */
+  async getUserProfile(userId: string) {
+    try {
+      const response = await userApi.getProfileByUserId(userId)
+      return response
+    } catch (error) {
+      console.error("getUserProfile service error:", error)
+      throw error
+    }
+  },
 }

@@ -51,4 +51,7 @@ public class FileRepository {
         return new ByteArrayResource(data);
     }
 
+    public void delete(String path) throws IOException {
+        Files.deleteIfExists(Path.of(path));
+    }
 }
