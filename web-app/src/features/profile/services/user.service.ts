@@ -69,4 +69,30 @@ export const userService = {
       throw error
     }
   },
+
+  /**
+   * Orchestrates following a user.
+   */
+  async followUser(userId: string) {
+    try {
+      const response = await userApi.followUser(userId)
+      return response
+    } catch (error) {
+      console.error("followUser service error:", error)
+      throw error
+    }
+  },
+
+  /**
+   * Orchestrates unfollowing a user.
+   */
+  async unfollowUser(userId: string) {
+    try {
+      const response = await userApi.unfollowUser(userId)
+      return response
+    } catch (error) {
+      console.error("unfollowUser service error:", error)
+      throw error
+    }
+  },
 }

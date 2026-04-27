@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { PostResponse } from "../types/post.type"
-import { usePostActions } from "../hooks/usePostActions"
+import { useEditPost } from "../hooks/useEditPost"
 import { cn } from "@/lib/utils"
 
 interface EditPostDialogProps {
@@ -17,54 +17,15 @@ interface EditPostDialogProps {
 }
 
 export function EditPostDialog({ post, open, onOpenChange, onSuccess }: EditPostDialogProps) {
-  const [content, setContent] = useState(post.content)
-  const [imageUrls, setImageUrls] = useState<string[]>(post.imageUrls || [])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { updatePost, uploadMedia } = usePostActions()
-
-  useEffect(() => {
-    if (open) {
-      setContent(post.content)
-      setImageUrls(post.imageUrls || [])
-    }
-  }, [open, post])
-
-  const handleUpdate = async () => {
-    if (!content.trim() && imageUrls.length === 0) return
-
-    try {
-      setIsSubmitting(true)
-      const success = await updatePost(post.id, {
-        content,
-        imageUrls,
-        postType: post.postType,
-        visibility: post.visibility
-      })
-
-      if (success) {
-        onOpenChange(false)
-        onSuccess?.()
-      }
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
-
-    for (let i = 0; i < files.length; i++) {
-      const url = await uploadMedia(files[i])
-      if (url) {
-        setImageUrls(prev => [...prev, url])
-      }
-    }
-  }
-
-  const removeImage = (index: number) => {
-    setImageUrls(prev => prev.filter((_, i) => i !== index))
-  }
+  const {
+    content,
+    setContent,
+    imageUrls,
+    isSubmitting,
+    handleUpdate,
+    handleFileUpload,
+    removeImage
+  } = useEditPost(post, onSuccess, onOpenChange)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -101,7 +62,7 @@ export function EditPostDialog({ post, open, onOpenChange, onSuccess }: EditPost
             <div className="flex items-center gap-2">
               <label className="cursor-pointer p-2 rounded-full hover:bg-primary/10 text-primary transition-colors">
                 <ImageIcon className="h-5 w-5" />
-                <input type="file" multiple className="hidden" onChange={handleFileUpload} accept="image/*" />
+                <input type="file" multiple className="hidden" onChange={(e) => handleFileUpload(e.target.files)} accept="image/*" />
               </label>
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-accent/10 text-accent">
                 <Video className="h-5 w-5" />

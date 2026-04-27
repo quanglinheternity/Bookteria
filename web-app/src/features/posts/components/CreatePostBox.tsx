@@ -7,84 +7,26 @@ import { Textarea } from "@/components/ui/textarea"
 import { DEFAULT_AVATAR } from "@/constants/image"
 import { useUser } from "@/features/profile/hooks/useUser"
 import { Image, Video, MapPin, Send, Loader2, X, Plus } from "lucide-react"
-import { PostType, Visibility } from "../types/post.type"
-import { usePostActions } from "../hooks/usePostActions"
+import { useCreatePost, SelectedFile } from "../hooks/useCreatePost"
 import { cn } from "@/lib/utils"
 
 interface CreatePostBoxProps {
   onSuccess?: () => void
 }
 
-interface SelectedFile {
-  file: File
-  preview: string
-  type: "image" | "video"
-}
-
 export function CreatePostBox({ onSuccess }: CreatePostBoxProps) {
-  const [content, setContent] = useState("")
-  const [visibility, setVisibility] = useState<Visibility>(Visibility.PUBLIC)
-  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([])
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const { user } = useUser()
-  
-  const { createPost, uploadMedia, isSubmitting } = usePostActions()
-  const [isUploading, setIsUploading] = useState(false)
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length === 0) return
-
-    const newFiles: SelectedFile[] = files.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      type: file.type.startsWith("video/") ? "video" : "image"
-    }))
-
-    setSelectedFiles(prev => [...prev, ...newFiles])
-    // Clear input so same file can be selected again
-    if (fileInputRef.current) fileInputRef.current.value = ""
-  }
-
-  const removeFile = (index: number) => {
-    setSelectedFiles(prev => {
-      const newFiles = [...prev]
-      URL.revokeObjectURL(newFiles[index].preview)
-      newFiles.splice(index, 1)
-      return newFiles
-    })
-  }
-
-  const handlePost = async () => {
-    if (!content.trim() && selectedFiles.length === 0) return
-
-    try {
-      setIsUploading(true)
-      
-      // 1. Upload all files parallel
-      const uploadPromises = selectedFiles.map(sf => uploadMedia(sf.file))
-      const uploadedUrls = await Promise.all(uploadPromises)
-      
-      const imageUrls = uploadedUrls.filter((url: string | null): url is string => url !== null)
-
-      // 2. Create post
-      const result = await createPost({
-        content,
-        postType: PostType.IMAGE_POST,
-        visibility,
-        imageUrls,
-        imageLayout: "auto", // Default to auto
-      })
-
-      if (result) {
-        setContent("")
-        setSelectedFiles([])
-        onSuccess?.()
-      }
-    } finally {
-      setIsUploading(false)
-    }
-  }
+  const {
+    content,
+    setContent,
+    selectedFiles,
+    fileInputRef,
+    isSubmitting,
+    isUploading,
+    handleFileSelect,
+    removeFile,
+    handlePost
+  } = useCreatePost(onSuccess)
 
   const renderPreviewGrid = () => {
     const count = selectedFiles.length

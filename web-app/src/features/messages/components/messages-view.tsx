@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { useConversations } from "../hooks/useChat"
 import { useUser } from "@/features/profile"
 import { socketConfig } from "@/configurations/socket"
@@ -9,9 +10,10 @@ import { ChatWindow } from "./chat-window"
 
 export function MessagesView() {
   const { user } = useUser()
+  const searchParams = useSearchParams()
   const { conversations, isLoading, refresh } = useConversations()
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
-  const [showListOnMobile, setShowListOnMobile] = useState(true)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(searchParams.get("conversationId"))
+  const [showListOnMobile, setShowListOnMobile] = useState(!searchParams.get("conversationId"))
 
   // Initialize socket on mount
   useEffect(() => {
@@ -20,6 +22,15 @@ export function MessagesView() {
       socketConfig.disconnect()
     }
   }, [])
+
+  // Sync selectedConversationId with query param change
+  useEffect(() => {
+    const convoId = searchParams.get("conversationId")
+    if (convoId) {
+      setSelectedConversationId(convoId)
+      setShowListOnMobile(false)
+    }
+  }, [searchParams])
 
   // Find the selected conversation object
   const selectedConversation = useMemo(() => 

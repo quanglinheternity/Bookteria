@@ -51,4 +51,20 @@ export const userApi = {
     const response = await axiosInstance.get(API_ENDPOINTS.USER.GET_PROFILE_BY_USERID(userId))
     return response.data
   },
+
+  /**
+   * Follows a user.
+   */
+  async followUser(userId: string): Promise<any> {
+    const response = await axiosInstance.post(API_ENDPOINTS.USER.FOLLOW(userId))
+    return response.data
+  },
+
+  /**
+   * Unfollows a user.
+   */
+  async unfollowUser(userId: string): Promise<any> {
+    const response = await axiosInstance.post(API_ENDPOINTS.USER.UNFOLLOW(userId))
+    return response.data
+  },
 }

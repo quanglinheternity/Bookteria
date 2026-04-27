@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Heart, MessageCircle, Share2, MoreHorizontal, X, ChevronLeft, ChevronRight, Edit, Trash2 } from "lucide-react"
 import { PostResponse, Visibility } from "../types/post.type"
-import { usePostActions } from "../hooks/usePostActions"
+import { usePostCard } from "../hooks/usePostCard"
 import { CommentSection } from "./CommentSection"
+import { PostDetailDialog } from "./PostDetailDialog"
 import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
@@ -39,68 +40,28 @@ export function PostCard({ post, onDelete }: PostCardProps) {
   const { user: currentUser } = useUser()
   const isOwner = currentUser?.userId === post.user.userId
 
-  const [isLiked, setIsLiked] = useState(post.isLiked || false)
-  const [likesCount, setLikesCount] = useState(post.likeCount)
-  const [isActionLoading, setIsActionLoading] = useState(false)
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [showHideConfirm, setShowHideConfirm] = useState(false)
-  const { likePost, unlikePost, updatePost, deletePost } = usePostActions()
-
-  useEffect(() => {
-    setIsLiked(post.isLiked || false)
-    setLikesCount(post.likeCount)
-  }, [post.isLiked, post.likeCount])
-
-  const [showComments, setShowComments] = useState(false)
-  const [commentsCount, setCommentsCount] = useState(post.commentCount)
-
-  const handleLike = async () => {
-    if (isActionLoading) return
-
-    const previousLiked = isLiked
-    const previousCount = likesCount
-
-    // Optimistic UI
-    setIsLiked(!previousLiked)
-    setLikesCount(prev => previousLiked ? prev - 1 : prev + 1)
-
-    try {
-      setIsActionLoading(true)
-      const success = previousLiked
-        ? await unlikePost(post.id)
-        : await likePost(post.id)
-
-      if (!success) {
-        setIsLiked(previousLiked)
-        setLikesCount(previousCount)
-      }
-    } finally {
-      setIsActionLoading(false)
-    }
-  }
-
-  const confirmDelete = async () => {
-    setIsActionLoading(true)
-    const success = await deletePost(post.id)
-    if (success) {
-      onDelete?.()
-    }
-    setIsActionLoading(false)
-    setShowDeleteConfirm(false)
-  }
-
-  const confirmHide = async () => {
-    setIsActionLoading(true)
-    const success = await updatePost(post.id, {
-      visibility: Visibility.PRIVATE
-    })
-    if (success) {
-      onDelete?.()
-    }
-    setIsActionLoading(false)
-    setShowHideConfirm(false)
-  }
+  const {
+    isLiked,
+    likesCount,
+    isActionLoading,
+    selectedImageIndex,
+    setSelectedImageIndex,
+    showDeleteConfirm,
+    setShowDeleteConfirm,
+    showHideConfirm,
+    setShowHideConfirm,
+    showComments,
+    setShowComments,
+    showDetail,
+    setShowDetail,
+    commentsCount,
+    setCommentsCount,
+    handleLike,
+    confirmDelete,
+    confirmHide,
+    nextImage,
+    prevImage
+  } = usePostCard(post, onDelete)
 
   const renderImages = () => {
     const images = post.imageUrls || []
@@ -246,7 +207,10 @@ export function PostCard({ post, onDelete }: PostCardProps) {
         </div>
 
         {/* Post Content */}
-        <div className="px-4 pb-1">
+        <div 
+          className="px-4 pb-1 cursor-pointer hover:bg-muted/30 transition-colors"
+          onClick={() => setShowDetail(true)}
+        >
           <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap selection:bg-primary/20">
             {post.content}
           </p>
@@ -291,11 +255,11 @@ export function PostCard({ post, onDelete }: PostCardProps) {
             size="sm"
             className={cn(
               "flex-1 h-9 gap-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-all rounded-md font-bold text-xs",
-              showComments && "text-primary bg-primary/5"
+              showDetail && "text-primary bg-primary/5"
             )}
-            onClick={() => setShowComments(!showComments)}
+            onClick={() => setShowDetail(true)}
           >
-            <MessageCircle className={cn("h-4 w-4", showComments && "fill-current")} />
+            <MessageCircle className={cn("h-4 w-4", showDetail && "fill-current")} />
             Bình luận
           </Button>
 
@@ -305,14 +269,16 @@ export function PostCard({ post, onDelete }: PostCardProps) {
           </Button>
         </div>
 
-        {/* Comments Section */}
-        {showComments && (
-          <CommentSection
-            postId={post.id}
-            onCommentCountChange={setCommentsCount}
-          />
-        )}
+        {/* Inline Comments Section (Removed for Dialog) */}
       </div>
+
+      {/* Post Detail Dialog */}
+      <PostDetailDialog
+        post={post}
+        open={showDetail}
+        onOpenChange={setShowDetail}
+        onCommentCountChange={setCommentsCount}
+      />
 
       {/* Image Lightbox Overlay */}
       {selectedImageIndex !== null && (
@@ -335,7 +301,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
                 className="absolute left-4 md:left-10 p-3 rounded-full bg-white/5 text-white hover:bg-white/10 transition-all z-[110]"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setSelectedImageIndex(prev => prev !== null && prev > 0 ? prev - 1 : post.imageUrls.length - 1)
+                  prevImage()
                 }}
               >
                 <ChevronLeft className="h-8 w-8" />
@@ -345,7 +311,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
                 className="absolute right-4 md:right-10 p-3 rounded-full bg-white/5 text-white hover:bg-white/10 transition-all z-[110]"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setSelectedImageIndex(prev => prev !== null && prev < post.imageUrls.length - 1 ? prev + 1 : 0)
+                  nextImage()
                 }}
               >
                 <ChevronRight className="h-8 w-8" />

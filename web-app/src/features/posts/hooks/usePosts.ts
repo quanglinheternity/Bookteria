@@ -23,10 +23,10 @@ export function usePosts(
   const lastParamsRef = useRef<string>("")
 
   const fetchPosts = useCallback(
-    async (page: number, size: number) => {
+    async (page: number, size: number, force: boolean = false) => {
       // Create a unique key for the current request
       const requestKey = `${userId}-${page}-${size}-${isOwnProfile}`
-      if (lastParamsRef.current === requestKey) return
+      if (!force && lastParamsRef.current === requestKey) return
       
       if (userId === "undefined") return
 
@@ -67,7 +67,10 @@ export function usePosts(
     fetchPosts(pagination.currentPage, pagination.pageSize)
   }, [fetchPosts, pagination.currentPage, pagination.pageSize])
 
-  const refresh = () => fetchPosts(pagination.currentPage, pagination.pageSize)
+  const refresh = () => {
+    lastParamsRef.current = ""
+    fetchPosts(1, pagination.pageSize, true)
+  }
 
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, currentPage: page }))

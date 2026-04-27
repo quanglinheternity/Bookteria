@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
     UPDATE_AVATAR: `${API_BASE_URL}/profile/users/avatar`,
     SEARCH: `${API_BASE_URL}/profile/users/search`,
     GET_PROFILE_BY_USERID: (userId: string) => `${API_BASE_URL}/profile/users/internal/${userId}/detail`,
+    FOLLOW: (userId: string) => `${API_BASE_URL}/profile/users/${userId}/follow`,
+    UNFOLLOW: (userId: string) => `${API_BASE_URL}/profile/users/${userId}/unfollow`,
   },
   CHAT: {
     MY_CONVERSATIONS: `${API_BASE_URL}/chat/conversations/my-conversations`,

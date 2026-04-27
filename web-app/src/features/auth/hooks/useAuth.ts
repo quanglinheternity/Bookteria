@@ -34,9 +34,19 @@ export function useAuth() {
         setError("Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.")
         toast.error("Đăng nhập thất bại", "Mã lỗi: " + response.code)
       }
-    } catch (err) {
-      setError("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.")
-      toast.error("Lỗi kết nối", "Không thể kết nối đến dịch vụ.")
+    } catch (err: any) {
+      const responseData = err.response?.data
+      
+      if (responseData?.code === 1007) {
+        setError("Tài khoản hoặc mật khẩu không chính xác")
+        toast.error("Đăng nhập thất bại", "Thông tin đăng nhập không hợp lệ.")
+      } else if (responseData?.code) {
+        setError("Đã xảy ra lỗi: " + (responseData.message || responseData.code))
+        toast.error("Đăng nhập thất bại", responseData.message || ("Mã lỗi: " + responseData.code))
+      } else {
+        setError("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.")
+        toast.error("Lỗi kết nối", "Không thể kết nối đến dịch vụ.")
+      }
     } finally {
       setIsLoading(false)
     }

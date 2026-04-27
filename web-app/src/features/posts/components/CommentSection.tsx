@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DEFAULT_AVATAR } from "@/constants/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useComments } from "../hooks/useComments"
+import { useCommentSection } from "../hooks/useCommentSection"
 import { commentService } from "../services/comment.service"
 import { CommentResponse } from "../types/comment.type"
 import { Heart, MessageCircle, Send, MoreHorizontal, Trash2, Loader2 } from "lucide-react"
@@ -18,92 +18,34 @@ import { cn } from "@/lib/utils"
 interface CommentSectionProps {
   postId: string
   onCommentCountChange?: (updater: (prev: number) => number) => void
+  hideInput?: boolean
+  header?: React.ReactNode
 }
 
-export function CommentSection({ postId, onCommentCountChange }: CommentSectionProps) {
+export function CommentSection({ postId, onCommentCountChange, hideInput, header }: CommentSectionProps) {
   const { user: currentUser } = useUser()
-  const { 
-    comments, 
-    isLoading, 
-    fetchComments, 
-    addComment, 
-    likeComment, 
+  const {
+    comments,
+    isLoading,
+    newComment,
+    setNewComment,
+    replyingTo,
+    setReplyingTo,
+    isSubmitting,
+    latestReply,
+    handleSubmit,
+    likeComment,
     unlikeComment,
     deleteComment,
     loadMore,
     hasMore
-  } = useComments(postId)
-  const [newComment, setNewComment] = useState("")
-  const [replyingTo, setReplyingTo] = useState<CommentResponse | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [latestReply, setLatestReply] = useState<{parentId: string, comment: CommentResponse} | null>(null)
-
-  useEffect(() => {
-    fetchComments()
-  }, [fetchComments])
-
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newComment.trim() || isSubmitting) return
-
-    setIsSubmitting(true)
-    const result = await addComment(newComment.trim(), replyingTo?.id)
-    if (result) {
-      if (replyingTo) {
-        setLatestReply({ parentId: replyingTo.id, comment: result })
-      }
-      onCommentCountChange?.((prev: number) => prev + 1)
-      setNewComment("")
-      setReplyingTo(null)
-    }
-    setIsSubmitting(false)
-  }
+  } = useCommentSection(postId, onCommentCountChange)
 
   return (
-    <div className="border-t border-border/50 bg-muted/5 animate-in slide-in-from-top-1 duration-300">
-      {/* Replying indicator */}
-      {replyingTo && (
-        <div className="px-4 py-1.5 bg-primary/5 flex items-center justify-between border-b border-primary/10">
-          <p className="text-[10px] font-medium text-primary flex items-center gap-1.5">
-            Đang phản hồi <span className="font-bold">@{replyingTo.userName}</span>
-          </p>
-          <button 
-            onClick={() => setReplyingTo(null)}
-            className="text-[10px] text-muted-foreground hover:text-primary transition-colors"
-          >
-            Hủy
-          </button>
-        </div>
-      )}
-
-      {/* Input Area */}
-      <div className="p-4 flex gap-3">
-        <Avatar className="h-8 w-8 border border-border">
-          <AvatarImage src={currentUser?.avatar || DEFAULT_AVATAR} />
-          <AvatarFallback>{currentUser?.firstName?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <form onSubmit={handleSubmit} className="flex-1 flex gap-2">
-          <Input 
-            placeholder={replyingTo ? `Phản hồi ${replyingTo.userName}...` : "Viết bình luận..."} 
-            value={newComment}
-            autoFocus={!!replyingTo}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="h-8 text-sm bg-background border-border/50 focus-visible:ring-primary/20"
-          />
-          <Button 
-            type="submit" 
-            size="sm" 
-            disabled={!newComment.trim() || isSubmitting}
-            className="h-8 px-3"
-          >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          </Button>
-        </form>
-      </div>
-
+    <div className="bg-muted/5 animate-in slide-in-from-top-1 duration-300 flex flex-col h-full">
       {/* Comments List */}
-      <div className="px-4 pb-4 space-y-4">
+      <div className="flex-1 px-4 py-4 space-y-4 overflow-y-auto">
+        {header && <div className="mb-6">{header}</div>}
         {isLoading && comments.length === 0 ? (
           <div className="flex justify-center py-4">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -148,6 +90,50 @@ export function CommentSection({ postId, onCommentCountChange }: CommentSectionP
           </div>
         )}
       </div>
+
+      {!hideInput && (
+        <div className="border-t border-border/50 bg-card">
+          {/* Replying indicator */}
+          {replyingTo && (
+            <div className="px-4 py-1.5 bg-primary/5 flex items-center justify-between border-b border-primary/10">
+              <p className="text-[10px] font-medium text-primary flex items-center gap-1.5">
+                Đang phản hồi <span className="font-bold">@{replyingTo.userName}</span>
+              </p>
+              <button 
+                onClick={() => setReplyingTo(null)}
+                className="text-[10px] text-muted-foreground hover:text-primary transition-colors"
+              >
+                Hủy
+              </button>
+            </div>
+          )}
+
+          {/* Input Area */}
+          <div className="p-4 flex gap-3">
+            <Avatar className="h-8 w-8 border border-border">
+              <AvatarImage src={currentUser?.avatar || DEFAULT_AVATAR} />
+              <AvatarFallback>{currentUser?.firstName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <form onSubmit={handleSubmit} className="flex-1 flex gap-2">
+              <Input 
+                placeholder={replyingTo ? `Phản hồi ${replyingTo.userName}...` : "Viết bình luận..."} 
+                value={newComment}
+                autoFocus={!!replyingTo}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="h-8 text-sm bg-background border-border/50 focus-visible:ring-primary/20"
+              />
+              <Button 
+                type="submit" 
+                size="sm" 
+                disabled={!newComment.trim() || isSubmitting}
+                className="h-8 px-3"
+              >
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

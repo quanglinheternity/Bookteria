@@ -16,7 +16,7 @@ import {
   Loader2,
   Table as FeedIcon,
 } from "lucide-react"
-import { PostCard, usePosts } from "@/features/posts"
+import { PostCard, usePosts, PostDetailDialog } from "@/features/posts"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -26,6 +26,7 @@ import { EditProfileModal } from "./edit-profile-modal"
 import { PostResponse } from "@/features/posts/types/post.type"
 import { UserProfile } from "../types/user.type"
 import { userService } from "../services/user.service"
+import { useProfileActions } from "../hooks/useProfileActions"
 import { useToast } from "@/hooks/ui/useToast"
 import { DEFAULT_AVATAR } from "@/constants/image"
 
@@ -45,13 +46,21 @@ export function ProfileView({
   onProfileUpdate,
 }: ProfileViewProps) {
   const router = useRouter()
-  const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const [following, setFollowing] = useState(user.isFollowing)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isAvatarUploading, setIsAvatarUploading] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "feed">("grid")
+  const [selectedPost, setSelectedPost] = useState<PostResponse | null>(null)
+
+  const {
+    following,
+    isFollowLoading,
+    isAvatarUploading,
+    isEditModalOpen,
+    setIsEditModalOpen,
+    isMessageLoading,
+    handleFollow,
+    handleMessage,
+    handleAvatarUpload
+  } = useProfileActions(user, onProfileUpdate)
 
   const { 
     posts: userPosts, 
@@ -70,19 +79,8 @@ export function ProfileView({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    setIsAvatarUploading(true)
-    try {
-      await userService.uploadUserAvatar(file)
-      toast.success("Ảnh đại diện đã được cập nhật!")
-      onProfileUpdate?.()
-    } catch (error) {
-      console.error("Error uploading avatar:", error)
-      toast.error("Không thể tải lên ảnh đại diện. Vui lòng thử lại.")
-    } finally {
-      setIsAvatarUploading(false)
-      if (fileInputRef.current) fileInputRef.current.value = ""
-    }
+    await handleAvatarUpload(file)
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   return (
@@ -223,21 +221,32 @@ export function ProfileView({
                 <>
                   <Button
                     className={cn(
-                      "text-sm",
+                      "text-sm min-w-[100px]",
                       following &&
                       "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     )}
                     size="sm"
-                    onClick={() => setFollowing(!following)}
+                    onClick={handleFollow}
+                    disabled={isFollowLoading}
                   >
-                    {following ? "Following" : "Follow"}
+                    {isFollowLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      following ? "Following" : "Follow"
+                    )}
                   </Button>
                   <Button
                     variant="outline"
-                    className="bg-transparent text-sm"
+                    className="bg-transparent text-sm min-w-[100px]"
                     size="sm"
+                    onClick={handleMessage}
+                    disabled={isMessageLoading}
                   >
-                    Message
+                    {isMessageLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Message"
+                    )}
                   </Button>
                 </>
               )}
@@ -306,16 +315,16 @@ export function ProfileView({
               viewMode === "grid" ? (
                 <div className="grid grid-cols-3 gap-1 p-1 lg:grid-cols-4">
                   {userPosts.map((post) => (
-                    <Link
+                    <div
                       key={post.id}
-                      href={`/post/${post.id}`}
-                      className="group relative aspect-square overflow-hidden rounded-md"
+                      onClick={() => setSelectedPost(post as any)}
+                      className="group relative aspect-square overflow-hidden rounded-md cursor-pointer"
                     >
                       {post.imageUrls && post.imageUrls.length > 0 ? (
                         <img
                           src={post.imageUrls[0]}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-secondary/20">
@@ -328,7 +337,7 @@ export function ProfileView({
                           <span className="font-bold">{post.likeCount}</span>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -350,19 +359,19 @@ export function ProfileView({
             {savedPosts.length > 0 ? (
               <div className="grid grid-cols-3 gap-1 p-1 lg:grid-cols-4">
                 {savedPosts.map((post) => (
-                  <Link
+                  <div
                     key={post.id}
-                    href={`/post/${post.id}`}
-                    className="group relative aspect-square overflow-hidden rounded-md"
+                    onClick={() => setSelectedPost(post as any)}
+                    className="group relative aspect-square overflow-hidden rounded-md cursor-pointer"
                   >
                     <Image
-                      src={post.images[0] || "/placeholder.svg"}
+                      src={post.imageUrls?.[0] || post.images?.[0] || "/placeholder.svg"}
                       alt="Saved post"
                       fill
-                      className="object-cover transition-transform group-hover:scale-105"
+                      className="object-cover transition-transform group-hover:scale-110"
                       sizes="(max-width: 1024px) 33vw, 25vw"
                     />
-                  </Link>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -381,6 +390,15 @@ export function ProfileView({
           onClose={() => setIsEditModalOpen(false)}
           onSuccess={() => onProfileUpdate?.()}
           defaultAvatar={DEFAULT_AVATAR}
+        />
+      )}
+
+      {selectedPost && (
+        <PostDetailDialog
+          post={selectedPost}
+          open={!!selectedPost}
+          onOpenChange={(open) => !open && setSelectedPost(null)}
+          onCommentCountChange={() => refreshPosts()}
         />
       )}
     </div>
