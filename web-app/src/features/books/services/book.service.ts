@@ -25,4 +25,8 @@ export const bookService = {
   async deleteBook(id: number) {
     return await bookApi.delete(id)
   },
+
+  async getBookFile(fileName: string) {
+    return await bookApi.downloadFile(fileName)
+  },
 }

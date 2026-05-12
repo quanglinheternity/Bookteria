@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useMemo } from "react"
+import Link from "next/link"
 import {
   Phone,
   Video,
@@ -61,18 +62,23 @@ export function ChatWindow({ conversation, onBack, currentUserId }: ChatWindowPr
             >
               <ChevronLeft className="h-6 w-6 text-primary" />
             </Button>
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={otherParticipant?.avatar || DEFAULT_AVATAR} alt={displayName} />
-              <AvatarFallback>{otherParticipant?.firstName?.charAt(0) || "U"}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-[15px] font-bold leading-none text-foreground">
-                {displayName}
-              </span>
-              <span className="mt-1 text-[11px] font-medium text-green-500">
-                Đang hoạt động
-              </span>
-            </div>
+            <Link 
+              href={`/profile/${otherParticipant?.userId}`}
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={otherParticipant?.avatar || DEFAULT_AVATAR} alt={displayName} />
+                <AvatarFallback>{otherParticipant?.firstName?.charAt(0) || "U"}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col text-left">
+                <span className="text-[15px] font-bold leading-none text-foreground">
+                  {displayName}
+                </span>
+                <span className="mt-1 text-[11px] font-medium text-green-500">
+                  Đang hoạt động
+                </span>
+              </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-1">

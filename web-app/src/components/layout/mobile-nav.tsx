@@ -40,6 +40,7 @@ const NAV_ITEMS = [
   { href: ROUTES.NOTIFICATIONS, icon: Bell, label: "Notifications" },
   { href: ROUTES.MESSAGES, icon: MessageCircle, label: "Messages" },
   { href: ROUTES.PROFILE, icon: User, label: "Profile" },
+  { href: ROUTES.ADMIN_POSTS, icon: Sparkles, label: "QL Bài viết" },
 ]
 
 export function MobileNav() {

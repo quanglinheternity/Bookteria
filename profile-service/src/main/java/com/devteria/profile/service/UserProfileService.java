@@ -45,7 +45,7 @@ public class UserProfileService {
     }
 
     public UserProfileResponse getByUserId(String userId) {
-        log.info("userId {}", userId);
+        //        log.info("userId {}", userId);
         UserProfile userProfile = userProfileRepository
                 .findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

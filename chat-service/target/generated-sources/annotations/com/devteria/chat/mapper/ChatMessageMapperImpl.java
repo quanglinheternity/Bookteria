@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Ubuntu)"
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class ChatMessageMapperImpl implements ChatMessageMapper {
@@ -23,11 +23,11 @@ public class ChatMessageMapperImpl implements ChatMessageMapper {
 
         ChatMessageResponse.ChatMessageResponseBuilder chatMessageResponse = ChatMessageResponse.builder();
 
-        chatMessageResponse.id( chatMessage.getId() );
         chatMessageResponse.conversationId( chatMessage.getConversationId() );
+        chatMessageResponse.createdDate( chatMessage.getCreatedDate() );
+        chatMessageResponse.id( chatMessage.getId() );
         chatMessageResponse.message( chatMessage.getMessage() );
         chatMessageResponse.sender( chatMessage.getSender() );
-        chatMessageResponse.createdDate( chatMessage.getCreatedDate() );
 
         return chatMessageResponse.build();
     }

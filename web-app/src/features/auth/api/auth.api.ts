@@ -1,10 +1,15 @@
 import axiosInstance from "@/api/axios-instance"
 import { API_ENDPOINTS } from "@/constants/api.endpoint"
-import { LoginRequest, LoginResponse, RefreshTokenResponse } from "../types/auth.type"
+import { LoginRequest, LoginResponse, RefreshTokenResponse, RegisterRequest, RegisterResponse } from "../types/auth.type"
 
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await axiosInstance.post(API_ENDPOINTS.AUTH.LOGIN, credentials)
+    return response.data
+  },
+
+  async register(data: RegisterRequest): Promise<RegisterResponse> {
+    const response = await axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER, data)
     return response.data
   },
 

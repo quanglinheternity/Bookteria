@@ -11,20 +11,20 @@ class SocketConfiguration {
       const token = tokenService.getToken()
       this.socket = io(SOCKET_URL, {
         query: { token: token || "" },
-        transports: ["websocket"], // Usually safer for separate servers
         autoConnect: false,
       })
 
       this.socket.on("connect", () => {
-        console.log("Socket.io connected")
+        // console.log("Socket.io connected")
       })
 
       this.socket.on("disconnect", () => {
-        console.log("Socket.io disconnected")
+        // console.log("Socket.io disconnected")
       })
 
       this.socket.on("connect_error", (error) => {
-        console.error("Socket.io connection error:", error)
+        // Suppress connection error logs as requested
+        // console.error("Socket.io connection error:", error)
       })
     }
     return this.socket

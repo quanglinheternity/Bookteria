@@ -47,25 +47,45 @@ const NAV_ITEMS = [
   { href: ROUTES.NOTIFICATIONS, icon: Bell, label: "Notifications" },
   { href: ROUTES.MESSAGES, icon: MessageCircle, label: "Messages" },
   { href: ROUTES.PROFILE, icon: User, label: "Profile" },
+  { href: ROUTES.ADMIN_POSTS, icon: Sparkles, label: "QL Bài viết" },
 ]
+
+import { useReaderSettings } from "@/hooks/use-reader-settings"
 
 export function DesktopSidebar() {
   const pathname = usePathname()
   const { logout } = useAuth()
   const { user, isLoading: isUserLoading } = useUser()
+  const { theme } = useReaderSettings()
+
+  const isReaderPage = pathname.includes("/read")
+  const isReaderDark = isReaderPage && theme === "dark"
 
   return (
-    <aside className="fixed left-0 top-0 z-50 hidden h-screen w-[240px] flex-col border-r border-border bg-card md:flex xl:w-[280px]">
+    <aside className={cn(
+      "fixed left-0 top-0 z-50 hidden h-screen w-[240px] flex-col border-r md:flex xl:w-[280px] transition-all duration-500",
+      isReaderDark 
+        ? "bg-black border-white/5" 
+        : isReaderPage && theme === "sepia"
+          ? "bg-[#f4ecd8] border-[#5b4636]/10"
+          : "bg-card border-border"
+    )}>
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
           {/* <Camera className="h-5 w-5 text-primary-foreground" /> */}
         </div>
         <div>
-          <h1 className="font-serif text-xl font-bold tracking-tight text-foreground">
+          <h1 className={cn(
+            "font-serif text-xl font-bold tracking-tight transition-colors duration-500",
+            isReaderDark ? "text-white" : isReaderPage && theme === "sepia" ? "text-[#5b4636]" : "text-foreground"
+          )}>
             VPS
           </h1>
-          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+          <p className={cn(
+            "text-[10px] font-medium uppercase tracking-widest transition-colors duration-500",
+            isReaderDark ? "text-white/40" : isReaderPage && theme === "sepia" ? "text-[#5b4636]/60" : "text-muted-foreground"
+          )}>
             Vietnam Photo Scout
           </p>
         </div>
@@ -86,10 +106,14 @@ export function DesktopSidebar() {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-500",
                     isActive
                       ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : isReaderDark 
+                        ? "text-white/60 hover:bg-white/10 hover:text-white"
+                        : isReaderPage && theme === "sepia"
+                          ? "text-[#5b4636]/60 hover:bg-[#5b4636]/5 hover:text-[#5b4636]"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
                   <Icon
@@ -117,11 +141,17 @@ export function DesktopSidebar() {
       </nav>
 
       {/* User Profile Bottom */}
-      <div className="border-t border-border p-4">
+      <div className={cn(
+        "border-t p-4 transition-colors duration-500",
+        isReaderDark ? "border-white/5" : isReaderPage && theme === "sepia" ? "border-[#5b4636]/10" : "border-border"
+      )}>
         <div className="flex items-center justify-between gap-2">
           <Link
             href={`/profile/${user?.userId || ""}`}
-            className="flex flex-1 items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted"
+            className={cn(
+              "flex flex-1 items-center gap-3 rounded-lg p-2 transition-all duration-500",
+              isReaderDark ? "hover:bg-white/5" : isReaderPage && theme === "sepia" ? "hover:bg-[#5b4636]/5" : "hover:bg-muted"
+            )}
           >
             <Avatar className="h-10 w-10">
               <AvatarImage
@@ -133,10 +163,16 @@ export function DesktopSidebar() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-semibold text-foreground">
+              <p className={cn(
+                "truncate text-sm font-semibold transition-colors duration-500",
+                isReaderDark ? "text-white" : isReaderPage && theme === "sepia" ? "text-[#5b4636]" : "text-foreground"
+              )}>
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className={cn(
+                "truncate text-xs transition-colors duration-500",
+                isReaderDark ? "text-white/40" : isReaderPage && theme === "sepia" ? "text-[#5b4636]/60" : "text-muted-foreground"
+              )}>
                 @{user?.username || (user?.username?.split("@")[0])}
               </p>
             </div>

@@ -52,6 +52,7 @@ export function ProfileView({
 
   const {
     following,
+    followersCount,
     isFollowLoading,
     isAvatarUploading,
     isEditModalOpen,
@@ -181,7 +182,7 @@ export function ProfileView({
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-xl font-bold text-foreground">
-                  {(user.followersCount || 0).toLocaleString()}
+                  {(followersCount || 0).toLocaleString()}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   Followers

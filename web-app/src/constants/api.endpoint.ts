@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/identity/auth/token`,
     LOGOUT: `${API_BASE_URL}/identity/auth/logout`,
     REFRESH: `${API_BASE_URL}/identity/auth/refresh`,
+    REGISTER: `${API_BASE_URL}/identity/users/registration`,
   },
   USER: {
     MY_INFO: `${API_BASE_URL}/profile/users/my-profile`,
@@ -29,5 +30,8 @@ export const API_ENDPOINTS = {
   POST: {
     POSTS: `${API_BASE_URL}/posts/api/v1/posts`,
     COMMENTS: `${API_BASE_URL}/posts/api/v1/comments`,
+  },
+  FILE: {
+    DOWNLOAD: (fileName: string) => `${API_BASE_URL}/file/media/download/${fileName}`,
   },
 } as const

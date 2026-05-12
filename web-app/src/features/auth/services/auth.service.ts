@@ -1,11 +1,11 @@
 import { authApi } from "../api/auth.api"
 import { tokenService } from "@/services/token.service"
-import { LoginRequest } from "../types/auth.type"
+import { LoginRequest, RegisterRequest } from "../types/auth.type"
 
 export const authService = {
   async handleLogin(credentials: LoginRequest) {
     const response = await authApi.login(credentials)
-    
+
     if (response.code === 1000) {
       tokenService.setTokens(
         response.result.token,
@@ -13,13 +13,23 @@ export const authService = {
         response.result.expiryTime
       )
     }
-    
+
     return response
+  },
+
+  async handleRegister(data: RegisterRequest) {
+    try {
+      const response = await authApi.register(data)
+      return response
+    } catch (error) {
+      console.error("handleRegister service error:", error)
+      throw error
+    }
   },
 
   async handleLogout() {
     const token = tokenService.getToken()
-    
+
     try {
       if (token) {
         await authApi.logout(token)
@@ -47,13 +57,13 @@ export const authService = {
       return response
     } catch (error: any) {
       console.error("Refresh token service error:", error)
-      
+
       // Only logout and clear cookies if the server explicitly tells us the token is invalid (4xx)
       // If it's a network error (no response) or server error (5xx), we keep the cookies.
       if (error.response && error.response.status >= 400 && error.response.status < 500) {
         this.handleLogout()
       }
-      
+
       throw error
     }
   },

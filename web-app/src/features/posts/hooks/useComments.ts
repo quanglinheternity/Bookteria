@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useCallback } from "react"
 import { commentService } from "../services/comment.service"
 import { CommentResponse, CommentCreationRequest } from "../types/comment.type"

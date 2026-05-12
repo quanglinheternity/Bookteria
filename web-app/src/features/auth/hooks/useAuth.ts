@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { authService } from "../services/auth.service"
 import { tokenService } from "@/services/token.service"
-import { LoginRequest } from "../types/auth.type"
+import { LoginRequest, RegisterRequest } from "../types/auth.type"
 import { useToast } from "@/hooks/ui/useToast"
 
 export function useAuth() {
@@ -53,6 +53,39 @@ export function useAuth() {
     return false
   }
 
+  const register = async (data: RegisterRequest) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await authService.handleRegister(data)
+
+      if (response.code === 1000) {
+        toast.success(
+          "Đăng ký thành công",
+          "Tài khoản của bạn đã được tạo. Vui lòng đăng nhập."
+        )
+        router.push("/login")
+        return true
+      } else {
+        setError(response.message || "Đăng ký thất bại")
+        toast.error("Đăng ký thất bại", response.message || "Đã có lỗi xảy ra")
+      }
+    } catch (err: any) {
+      const responseData = err.response?.data
+      if (responseData?.code) {
+        setError(responseData.message || "Đã có lỗi xảy ra khi đăng ký")
+        toast.error("Đăng ký thất bại", responseData.message || "Mã lỗi: " + responseData.code)
+      } else {
+        setError("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.")
+        toast.error("Lỗi kết nối", "Không thể kết nối đến dịch vụ.")
+      }
+    } finally {
+      setIsLoading(false)
+    }
+    return false
+  }
+
   const logout = async () => {
     try {
       await authService.handleLogout()
@@ -65,6 +98,7 @@ export function useAuth() {
 
   return {
     login,
+    register,
     logout,
     isLoading,
     error,

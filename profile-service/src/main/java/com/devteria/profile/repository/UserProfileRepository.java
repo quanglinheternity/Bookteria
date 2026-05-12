@@ -23,13 +23,13 @@ public interface UserProfileRepository extends Neo4jRepository<UserProfile, Stri
     @Query("MATCH (u:user_profile) WHERE u.firstName =~ $keyword OR u.lastName =~ $keyword RETURN u")
     List<UserProfile> searchByFirstNameOrLastName(String keyword);
 
-    @Query("MATCH (u:user_profile {userId: $userId})<-[r:FOLLOWS]-(follower) RETURN count(follower)")
+    @Query("MATCH (u:user_profile {userId: $userId})<-[r:FOLLOWS]-(follower) RETURN count(elementId(r))")
     long countFollowers(String userId);
 
-    @Query("MATCH (u:user_profile {userId: $userId})-[r:FOLLOWS]->(following) RETURN count(following)")
+    @Query("MATCH (u:user_profile {userId: $userId})-[r:FOLLOWS]->(following) RETURN count(elementId(r))")
     long countFollowing(String userId);
 
     @Query(
-            "MATCH (u1:user_profile {userId: $currentUserId})-[r:FOLLOWS]->(u2:user_profile {userId: $targetUserId}) RETURN count(r) > 0")
+            "MATCH (u1:user_profile {userId: $currentUserId})-[r:FOLLOWS]->(u2:user_profile {userId: $targetUserId}) RETURN count(elementId(r)) > 0")
     boolean isFollowing(String currentUserId, String targetUserId);
 }

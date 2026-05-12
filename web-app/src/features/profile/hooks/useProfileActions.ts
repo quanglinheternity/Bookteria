@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { userService } from "../services/user.service"
 import { useChatActions } from "@/features/messages/hooks/useChat"
@@ -10,31 +10,47 @@ import { UserProfile } from "../types/user.type"
 export function useProfileActions(user: UserProfile, onProfileUpdate?: () => void) {
   const router = useRouter()
   const { toast } = useToast()
-  
+
   const [following, setFollowing] = useState(user.isFollowing)
+  const [followersCount, setFollowersCount] = useState(user.followersCount || 0)
   const [isFollowLoading, setIsFollowLoading] = useState(false)
   const [isAvatarUploading, setIsAvatarUploading] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  
+
+  // Sync state with prop updates
+  useEffect(() => {
+    setFollowing(user.isFollowing)
+    setFollowersCount(user.followersCount || 0)
+  }, [user.isFollowing, user.followersCount])
+
   const { createConversation, isSending: isMessageLoading } = useChatActions()
 
   const handleFollow = async () => {
     if (isFollowLoading) return
-    
+
     setIsFollowLoading(true)
+    const originalFollowing = following
+    const originalCount = followersCount
+
+    // Optimistic update
+    setFollowing(!originalFollowing)
+    setFollowersCount(prev => originalFollowing ? prev - 1 : prev + 1)
+
     try {
-      if (following) {
+      if (originalFollowing) {
         await userService.unfollowUser(user.userId)
-        toast.success(`Đã bỏ theo dõi ${user.username}`)
+        toast.success(`Đã bỏ theo dõi ${user.firstName + ' ' + user.lastName}`)
       } else {
         await userService.followUser(user.userId)
-        toast.success(`Đã theo dõi ${user.username}`)
+        toast.success(`Đã theo dõi ${user.firstName + ' ' + user.lastName}`)
       }
-      setFollowing(!following)
       onProfileUpdate?.()
     } catch (error) {
       console.error("Error following/unfollowing:", error)
       toast.error("Thao tác thất bại. Vui lòng thử lại.")
+      // Rollback
+      setFollowing(originalFollowing)
+      setFollowersCount(originalCount)
     } finally {
       setIsFollowLoading(false)
     }
@@ -45,7 +61,7 @@ export function useProfileActions(user: UserProfile, onProfileUpdate?: () => voi
       type: "PRIVATE",
       participantIds: [user.userId]
     })
-    
+
     if (result) {
       router.push(`/messages?conversationId=${result.id}`)
     }
@@ -67,6 +83,7 @@ export function useProfileActions(user: UserProfile, onProfileUpdate?: () => voi
 
   return {
     following,
+    followersCount,
     isFollowLoading,
     isAvatarUploading,
     isEditModalOpen,

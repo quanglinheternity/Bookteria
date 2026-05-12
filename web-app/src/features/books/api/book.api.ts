@@ -76,4 +76,12 @@ export const bookApi = {
     )
     return response.data
   },
+
+  downloadFile: async (fileName: string): Promise<Blob> => {
+    const response = await axiosInstance.get(
+      API_ENDPOINTS.FILE.DOWNLOAD(fileName),
+      { responseType: "blob" }
+    )
+    return response.data
+  },
 }

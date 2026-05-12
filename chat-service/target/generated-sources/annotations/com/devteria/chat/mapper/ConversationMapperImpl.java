@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Ubuntu)"
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class ConversationMapperImpl implements ConversationMapper {
@@ -23,15 +23,15 @@ public class ConversationMapperImpl implements ConversationMapper {
 
         ConversationResponse.ConversationResponseBuilder conversationResponse = ConversationResponse.builder();
 
+        conversationResponse.createdDate( conversation.getCreatedDate() );
         conversationResponse.id( conversation.getId() );
-        conversationResponse.type( conversation.getType() );
-        conversationResponse.participantsHash( conversation.getParticipantsHash() );
+        conversationResponse.modifiedDate( conversation.getModifiedDate() );
         List<ParticipantInfo> list = conversation.getParticipants();
         if ( list != null ) {
             conversationResponse.participants( new ArrayList<ParticipantInfo>( list ) );
         }
-        conversationResponse.createdDate( conversation.getCreatedDate() );
-        conversationResponse.modifiedDate( conversation.getModifiedDate() );
+        conversationResponse.participantsHash( conversation.getParticipantsHash() );
+        conversationResponse.type( conversation.getType() );
 
         return conversationResponse.build();
     }

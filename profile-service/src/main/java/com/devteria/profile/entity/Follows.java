@@ -16,7 +16,7 @@ import lombok.*;
 @RelationshipProperties
 public class Follows {
     @RelationshipId
-    private Long id;
+    private String id;
 
     @TargetNode
     private UserProfile target;

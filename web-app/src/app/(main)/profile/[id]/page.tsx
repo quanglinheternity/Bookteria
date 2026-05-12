@@ -18,22 +18,22 @@ export default function UserProfilePage() {
 
   const isOwnProfile = currentUser?.userId === id
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setIsLoadingProfile(true)
-        const response = await userService.getUserProfile(id as string)
-        if (response.code === 200 || response.code === 1000) {
-          setProfile(response.result)
-        }
-      } catch (err) {
-        console.error("Error fetching profile:", err)
-      } finally {
-        setIsLoadingProfile(false)
+  const fetchProfile = async () => {
+    try {
+      const response = await userService.getUserProfile(id as string)
+      if (response.code === 200 || response.code === 1000) {
+        setProfile(response.result)
       }
+    } catch (err) {
+      console.error("Error fetching profile:", err)
     }
+  }
 
-    if (id) fetchProfile()
+  useEffect(() => {
+    if (id) {
+      setIsLoadingProfile(true)
+      fetchProfile().finally(() => setIsLoadingProfile(false))
+    }
   }, [id])
 
   const isLoading = isLoadingProfile || isPostsLoading
@@ -54,6 +54,7 @@ export default function UserProfilePage() {
       posts={userPosts as any} 
       showBackButton 
       isOwnProfile={isOwnProfile}
+      onProfileUpdate={fetchProfile}
     />
   )
 }
